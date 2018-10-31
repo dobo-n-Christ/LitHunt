@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Literature App</title>
+    <meta name="description" content="An English major's best friend. Get a summary of everything you ever wanted to know about a work of literature or author.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header role="banner">
+        <h1>Literature Search</h1>
+    </header>
+    <section id="js-search-form">
+        <form>
+            <label for="searchBox">Search for a Work of Literature</label>
+            <input type="text" name="searchBox" id="searchBox" placeholder="Search Title, ISBN, Author, etc.">
+            <input type="submit" value="Search">
+        </form>
+    </section>
+    <section id="js-search-results"></section>
+    <main role="main" id="js-result-content"></main>
+    <script src="main.js"></script>
+</body>
+</html>
