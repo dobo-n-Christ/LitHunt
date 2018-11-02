@@ -15,11 +15,12 @@
     </header>
     <section id="js-search-form">
         <form>
-            <label for="searchBox">Search for a Work of Literature</label>
-            <input type="text" name="searchBox" id="searchBox" placeholder="Search Title, ISBN, Author, etc.">
+            <label for="search-term">Search for a Work of Literature</label>
+            <input type="text" name="search-term" id="js-search-term" placeholder="Search Title, ISBN, Author, etc.">
             <input type="submit" value="Search">
         </form>
     </section>
+    <p id="js-error-message" class="error-message"></p>
     <section id="js-search-results"></section>
     <main role="main" id="js-result-content"></main>
     <script src="main.js"></script>
