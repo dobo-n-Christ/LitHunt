@@ -1,8 +1,7 @@
-const apiKey = 'AIzaSyCQurf0qBxp4GGCYCcO4xOQ9kakqoWEZQ4';
 const endpointUrl = 'https://www.googleapis.com/books/v1/volumes';
 
 function formatQueryParams(params) {
-    const queryParamItems = Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params.key)}`);
+    const queryParamItems = Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
     return queryParamItems.join('&');
 }
 
@@ -11,10 +10,9 @@ function displayResults(responseJson) {
     $('#js-search-results').empty();
 }
 
-function getResultsData(searchTerm) {
+function getResultsData(query) {
     const params = {
-        q: searchTerm,
-        key: apiKey
+        q: query
     }
     const queryString = formatQueryParams(params);
     const url = `${endpointUrl}?${queryString}`;
@@ -23,18 +21,6 @@ function getResultsData(searchTerm) {
     .then(responseJson => displayResults(responseJson))
     .catch(err => $('#js-error-message').text(`Something went wrong: ${err.message}`));
 }
-
-// function getResultsData(query, callback) {
-//     const settings = {
-//         url: bookSearchUrl,
-//         data: {
-//             key: apiKey,
-//         },
-//         dataType: 'jsonp',
-//         success: callback
-//     };
-//     $.ajax(settings);
-// }
 
 function watchForm() {
     $('#js-search-form').submit(event => {
