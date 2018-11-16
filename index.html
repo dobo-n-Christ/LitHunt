@@ -20,9 +20,30 @@
             <input type="submit" value="Search">
         </form>
     </section>
-    <p id="js-error-message" class="error-message"></p>
-    <section id="js-search-results"></section>
-    <main role="main" id="js-result-content"></main>
+    <p id="js-error-message" class="error-message" hidden></p>
+    <h2 id="js-search-results-total" class="search-results-total" hidden></h2>
+    <section id="search-results">
+        <ul id="js-search-results-list"></ul>
+    </section>
+    <main role="main" id="js-result-content" hidden></main>
+<!-- 
+    <ul>
+        <li class="result-element">
+            <article>
+                <h3 class="result-title">
+                    <a href=""></a>
+                </h3>
+                <cite class="result-url"></cite>
+                <a href="" class="result-thumbnail"><img src="" alt=""></a>
+                <div class="result-info">
+                    <a href="" class="author"></a>
+                    <span class="year-published"></span>
+                </div>
+                <p class="result-summary"></p>
+            </article>
+        </li>
+    </ul> -->
+
     <script src="main.js"></script>
 </body>
 </html>
