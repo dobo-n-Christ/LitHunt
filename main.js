@@ -43,7 +43,6 @@ function handleAuthor(item) {
     else {
         return '';
     }
-
 }
 
 function handlePublisher(item) {
@@ -122,7 +121,6 @@ function handleItemData(item) {
                 <h3 class="result-title">
                     <a href="${item.volumeInfo.infoLink}">${item.volumeInfo.title}</a>
                 </h3>
-                <cite class="result-url">${item.volumeInfo.infoLink}</cite><br>
                 ${thumbnail}
                 <div class="result-info">
                     ${pubData}
