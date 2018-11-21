@@ -1,4 +1,5 @@
 const endpointUrl = 'https://www.googleapis.com/books/v1/volumes';
+let bookResultsArray = [];
 
 function formatQueryParams(params) {
     const queryParamItems = Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
@@ -119,7 +120,7 @@ function handleItemData(item) {
         <li class="result-element">
             <article>
                 <h3 class="result-title">
-                    <a href="${item.volumeInfo.infoLink}">${item.volumeInfo.title}</a>
+                    <a href="javascript: displayBookDetail('${item.id}')">${item.volumeInfo.title}</a>
                 </h3>
                 ${thumbnail}
                 <div class="result-info">
@@ -151,12 +152,48 @@ function displayResults(responseJson) {
         listContainer.parent().prop('hidden', false);
 		listContainer.append(resultElement);
     }
+
 }
 
 function handleError(err) {
     $('#js-search-results-total').empty().prop('hidden', true);
     $('#js-search-results-list').empty().parent().prop('hidden', true);
     $('#js-error-message').prop('hidden', false).text(`Something went wrong: ${err.message}`)
+}
+
+function returnToSearchResults() {
+    $('#js-search-results-list').parent().prop('hidden', false);
+    $('#js-result-content').empty().prop('hidden', true);
+}
+
+function generateBookDetail(book) {
+    return `
+    <a href="javascript: returnToSearchResults()">Back to Search Results</a>
+    <h3>${book.volumeInfo.title}</h3>
+    <div>${handleThumbnail(book)}</div>
+    <h4>${handleAuthor(book)}</h4>
+    <p>${handlePublisher(book)} ${handleDatePublished(book)}</p>
+    <ul>
+        <li>${book.volumeInfo.industryIdentifiers[0].type}: ${book.volumeInfo.industryIdentifiers[0].identifier}</li>
+        <li>${book.volumeInfo.industryIdentifiers[1].type}: ${book.volumeInfo.industryIdentifiers[1].identifier}</li>
+    </ul>
+    <a href="${book.volumeInfo.previewLink}" target="_blank">Preview this book</a>
+    `;
+}
+
+function displayBookDetail(bookId) {
+    let book = null;
+    for (let i = 0; i < bookResultsArray.length; i++) {
+        if (bookResultsArray[i].id === bookId) {
+            book = bookResultsArray[i];
+            break;
+        }
+    }
+    // alert(book.volumeInfo.title);
+    const bookDetailCard = generateBookDetail(book);
+    $('#js-search-results-total').prop('hidden', true);
+    $('#js-search-results-list').parent().prop('hidden', true);
+    $('#js-result-content').prop('hidden', false).html(bookDetailCard);
 }
 
 function getResultsData(query) {
@@ -167,7 +204,10 @@ function getResultsData(query) {
     const url = `${endpointUrl}?${queryString}`;
     fetch(url)
     .then(response => response.json())
-    .then(responseJson => displayResults(responseJson))
+    .then(responseJson => {
+        bookResultsArray = responseJson.items;
+        displayResults(responseJson);
+    })
     .catch(handleError);
 }
 
