@@ -1,4 +1,5 @@
-const endpointUrl = 'https://www.googleapis.com/books/v1/volumes';
+const googleBooksUrl = 'https://www.googleapis.com/books/v1/volumes';
+const goodReadsUrl = 'https://www.goodreads.com/book/isbn/';
 let bookResultsArray = [];
 
 function formatQueryParams(params) {
@@ -120,7 +121,7 @@ function handleItemData(item) {
         <li class="result-element">
             <article>
                 <h3 class="result-title">
-                    <a href="javascript: displayBookDetail('${item.id}')">${item.volumeInfo.title}</a>
+                    <a href="#" data-book-id="${item.id}" class="result-title">${item.volumeInfo.title}</a>
                 </h3>
                 ${thumbnail}
                 <div class="result-info">
@@ -135,6 +136,8 @@ function handleItemData(item) {
         return i++;
     };
 }
+
+{/* <a href="javascript: displayBookDetail('${item.id}')">${item.volumeInfo.title}</a> */}
 
 function generateResultElement(response, i) {
     const item = response.items[i];
@@ -152,7 +155,6 @@ function displayResults(responseJson) {
         listContainer.parent().prop('hidden', false);
 		listContainer.append(resultElement);
     }
-
 }
 
 function handleError(err) {
@@ -162,13 +164,14 @@ function handleError(err) {
 }
 
 function returnToSearchResults() {
+    $('#js-search-results-total').prop('hidden', false);
     $('#js-search-results-list').parent().prop('hidden', false);
     $('#js-result-content').empty().prop('hidden', true);
 }
 
 function generateBookDetail(book) {
     return `
-    <a href="javascript: returnToSearchResults()">Back to Search Results</a>
+    <a href="#" class="back-to-results">Back to Search Results</a>
     <h3>${book.volumeInfo.title}</h3>
     <div>${handleThumbnail(book)}</div>
     <h4>${handleAuthor(book)}</h4>
@@ -177,8 +180,16 @@ function generateBookDetail(book) {
         <li>${book.volumeInfo.industryIdentifiers[0].type}: ${book.volumeInfo.industryIdentifiers[0].identifier}</li>
         <li>${book.volumeInfo.industryIdentifiers[1].type}: ${book.volumeInfo.industryIdentifiers[1].identifier}</li>
     </ul>
+    <p>${book.volumeInfo.description}</p>
     <a href="${book.volumeInfo.previewLink}" target="_blank">Preview this book</a>
     `;
+}
+
+function watchBackClick() {
+    $('.back-to-results').on('click', event => {
+        event.preventDefault();
+        returnToSearchResults();
+    })
 }
 
 function displayBookDetail(bookId) {
@@ -186,14 +197,49 @@ function displayBookDetail(bookId) {
     for (let i = 0; i < bookResultsArray.length; i++) {
         if (bookResultsArray[i].id === bookId) {
             book = bookResultsArray[i];
+            isbn = book.volumeInfo.industryIdentifiers[0].identifier;
             break;
         }
     }
-    // alert(book.volumeInfo.title);
     const bookDetailCard = generateBookDetail(book);
+    const bookReviewCard = getReviewData(isbn);
     $('#js-search-results-total').prop('hidden', true);
     $('#js-search-results-list').parent().prop('hidden', true);
-    $('#js-result-content').prop('hidden', false).html(bookDetailCard);
+    $('#js-result-content').prop('hidden', false).html(`${bookDetailCard}${bookReviewCard}`);
+    watchBackClick();
+}
+
+// function displayWikiDetail() {
+
+// }
+
+function getReviewData(isbn) {
+    const params = {
+        callback: '?',
+        format: 'json',
+        key: 'OndROFmtllOOQVVFp3Z91g',
+        user_id: '89700235',
+    }
+    const queryString = formatQueryParams(params);
+    const url = `${goodReadsUrl}${isbn}?${queryString}`;
+    $.getJSON(url).done((data) => {
+        alert(data);
+    })
+
+    // fetch(url)
+    // .then(response => response.json())
+    // .then(responseJson => displayReviewsDetail(responseJson))
+}
+
+function displayReviewsDetail(responseJson) {
+    $('#js-result-content').append(responseJson[reviews_widget]);
+}
+
+function watchResultClick() {
+    $('.result-title').on('click', event => {
+        event.preventDefault();
+        displayBookDetail(event.target.dataset.bookId);
+    })
 }
 
 function getResultsData(query) {
@@ -201,12 +247,13 @@ function getResultsData(query) {
         q: query
     }
     const queryString = formatQueryParams(params);
-    const url = `${endpointUrl}?${queryString}`;
+    const url = `${googleBooksUrl}?${queryString}`;
     fetch(url)
     .then(response => response.json())
     .then(responseJson => {
         bookResultsArray = responseJson.items;
         displayResults(responseJson);
+        watchResultClick();
     })
     .catch(handleError);
 }
