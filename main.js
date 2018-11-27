@@ -2,6 +2,20 @@ const googleBooksUrl = 'https://www.googleapis.com/books/v1/volumes';
 const wikiUrl = 'https://en.wikipedia.org/w/api.php';
 let bookResultsArray = [];
 
+function generateAmazonLink(book) {
+    const bookSearchTerm = encodeURIComponent(book);
+    return `
+    <a href="http://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}">
+    <img src="http://g-ec2.images-amazon.com/images/G/01/social/api-share/amazon_logo_500500._V323939215_.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
+    Purchase this and other related products from Amazon.com</a>
+    `;
+}
+
+function displayAmazonLink(book) {
+    const amazonLink = generateAmazonLink(book);
+    $('#js-result-content').append(amazonLink);
+}
+
 function getPageId(book) {
     const params = {
         action: 'query',
@@ -297,6 +311,7 @@ function watchResultClick() {
         event.preventDefault();
         displayBookDetail(event.target.dataset.bookId);
         getPageId(event.target.text);
+        displayAmazonLink(event.target.text);
     })
 }
 
