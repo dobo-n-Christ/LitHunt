@@ -1,6 +1,54 @@
 const googleBooksUrl = 'https://www.googleapis.com/books/v1/volumes';
-const goodReadsUrl = 'https://www.goodreads.com/book/isbn/';
+const wikiUrl = 'https://en.wikipedia.org/w/api.php';
 let bookResultsArray = [];
+
+function getPageId(book) {
+    const params = {
+        action: 'query',
+        format: 'json',
+        list: 'search',
+        srlimit: 1,
+        srsearch: book,
+        origin: '*'
+    }
+    const queryString = formatQueryParams(params);
+    const url = `${wikiUrl}?${queryString}`;
+    fetch(url)
+    .then(response => response.json())
+    .then(responseJson => {
+        const pageId = responseJson.query.search[0].pageid;
+        getWikiData(pageId);
+    })
+}
+
+function generateWikiExtract(bookExtract, pageId) {
+    return `
+    <p>${bookExtract.query.pages[pageId].extract}</p>
+    <a href="https://en.wikipedia.org/?curid=${pageId}">Go to Wikipedia page</a>
+    `;
+}
+
+function displayWikiExtract(bookExtract, id) {
+    const wikiExtractCard = generateWikiExtract(bookExtract, id);
+    $('#js-result-content').append(wikiExtractCard);
+}
+
+function getWikiData(pageId) {
+    const params = {
+        action: 'query',
+        format: 'json',
+        prop: 'extracts',
+        exintro: '',
+        explaintext: '',
+        pageids: pageId,
+        origin: '*'
+    }
+    const queryString = formatQueryParams(params);
+    const url = `${wikiUrl}?${queryString}`;
+    fetch(url)
+    .then(response => response.json())
+    .then(responseJson => displayWikiExtract(responseJson, pageId));
+}
 
 function formatQueryParams(params) {
     const queryParamItems = Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
@@ -13,8 +61,8 @@ function displayResultsTotal(responseJson) {
 
 function generateThumbnailElement(item, thumbnail) {
     return `
-        <a href="${item.volumeInfo.infoLink}" class="result-thumbnail"><img src="${thumbnail}" alt="Image of front cover of text used as thumbnail link to text information page"></a>
-        `;
+    <a href="${item.volumeInfo.infoLink}" class="result-thumbnail"><img src="${thumbnail}" alt="Image of front cover of text used as thumbnail link to text information page"></a>
+    `;
 }
 
 function handleThumbnail(item) {
@@ -71,6 +119,28 @@ function handleDatePublished(item) {
     return '';
 }
 
+function checkForItem(item) {
+    if (item) {
+        return item;
+    }
+}
+
+function generatePubDataElement(pubData) {
+    return `
+    <span class="publication-data">${pubData}</span>
+    `;
+}
+
+function handlePubData(author, publisher, datePublished) {
+    const pubData = [author, publisher, datePublished];
+    const filteredPubData = pubData.filter(checkForItem);
+    const pubElementArray = filteredPubData.map(generatePubDataElement);
+    if (pubElementArray.length > 1) {
+        return pubElementArray.join('<span> - </span>');
+    }
+    return pubElementArray[0];
+}
+
 function handleSummary(item) {
     if (item.searchInfo) {
         return `
@@ -85,28 +155,6 @@ function handleSummary(item) {
     else {
         return '';
     }
-}
-
-function checkForItem(item) {
-    if (item) {
-        return item;
-    }
-}
-
-function generatePubDataElement(pubData) {
-    return `
-        <span class="publication-data">${pubData}</span>
-        `;
-}
-
-function handlePubData(author, publisher, datePublished) {
-    const pubData = [author, publisher, datePublished];
-    const filteredPubData = pubData.filter(checkForItem);
-    const pubElementArray = filteredPubData.map(generatePubDataElement);
-    if (pubElementArray.length > 1) {
-        return pubElementArray.join('<span> - </span>');
-    }
-    return pubElementArray[0];
 }
 
 function handleItemData(item) {
@@ -137,8 +185,6 @@ function handleItemData(item) {
     };
 }
 
-{/* <a href="javascript: displayBookDetail('${item.id}')">${item.volumeInfo.title}</a> */}
-
 function generateResultElement(response, i) {
     const item = response.items[i];
     const resultElement = handleItemData(item);
@@ -157,16 +203,51 @@ function displayResults(responseJson) {
     }
 }
 
-function handleError(err) {
-    $('#js-search-results-total').empty().prop('hidden', true);
-    $('#js-search-results-list').empty().parent().prop('hidden', true);
-    $('#js-error-message').prop('hidden', false).text(`Something went wrong: ${err.message}`)
+function handleIsbn(book) {
+    const identArray = book.volumeInfo.industryIdentifiers;
+    if (identArray) {
+        if (identArray.length > 1) {
+            if (identArray[0].type.endsWith('10')) {
+                return `
+                <ul>
+                    <li>ISBN-10: ${identArray[0].identifier}</li>
+                    <li>ISBN-13: ${identArray[1].identifier}</li>
+                </ul>
+                `;
+            }
+            return `
+            <ul>
+                <li>ISBN-10: ${identArray[1].identifier}</li>
+                <li>ISBN-13: ${identArray[0].identifier}</li>
+            </ul>
+            `;
+        }
+        else if (identArray[0].type.startsWith('ISBN')) {
+            return `
+            <ul>
+                <li>ISBN: ${identArray[0].identifier}</li>
+            </ul>
+            `;
+        }
+        return '';
+    }
+    return '';
 }
 
-function returnToSearchResults() {
-    $('#js-search-results-total').prop('hidden', false);
-    $('#js-search-results-list').parent().prop('hidden', false);
-    $('#js-result-content').empty().prop('hidden', true);
+function handleDetailSummary(item) {
+    if (item.volumeInfo.description) {
+        return `
+        <p class="result-summary">${item.volumeInfo.description}</p>
+        `;
+    }
+    else if (item.searchInfo) {
+        return `
+        <p class="result-summary">${item.searchInfo.textSnippet}</p>
+        `;
+    }
+    else {
+        return '';
+    }
 }
 
 function generateBookDetail(book) {
@@ -176,13 +257,16 @@ function generateBookDetail(book) {
     <div>${handleThumbnail(book)}</div>
     <h4>${handleAuthor(book)}</h4>
     <p>${handlePublisher(book)} ${handleDatePublished(book)}</p>
-    <ul>
-        <li>${book.volumeInfo.industryIdentifiers[0].type}: ${book.volumeInfo.industryIdentifiers[0].identifier}</li>
-        <li>${book.volumeInfo.industryIdentifiers[1].type}: ${book.volumeInfo.industryIdentifiers[1].identifier}</li>
-    </ul>
-    <p>${book.volumeInfo.description}</p>
+    ${handleIsbn(book)}
+    ${handleDetailSummary(book)}
     <a href="${book.volumeInfo.previewLink}" target="_blank">Preview this book</a>
     `;
+}
+
+function returnToSearchResults() {
+    $('#js-search-results-total').prop('hidden', false);
+    $('#js-search-results-list').parent().prop('hidden', false);
+    $('#js-result-content').empty().prop('hidden', true);
 }
 
 function watchBackClick() {
@@ -193,7 +277,7 @@ function watchBackClick() {
 }
 
 function displayBookDetail(bookId) {
-    let book = null;
+    let book;
     for (let i = 0; i < bookResultsArray.length; i++) {
         if (bookResultsArray[i].id === bookId) {
             book = bookResultsArray[i];
@@ -202,44 +286,24 @@ function displayBookDetail(bookId) {
         }
     }
     const bookDetailCard = generateBookDetail(book);
-    const bookReviewCard = getReviewData(isbn);
     $('#js-search-results-total').prop('hidden', true);
     $('#js-search-results-list').parent().prop('hidden', true);
-    $('#js-result-content').prop('hidden', false).html(`${bookDetailCard}${bookReviewCard}`);
+    $('#js-result-content').prop('hidden', false).html(`${bookDetailCard}`);
     watchBackClick();
-}
-
-// function displayWikiDetail() {
-
-// }
-
-function getReviewData(isbn) {
-    const params = {
-        callback: '?',
-        format: 'json',
-        key: 'OndROFmtllOOQVVFp3Z91g',
-        user_id: '89700235',
-    }
-    const queryString = formatQueryParams(params);
-    const url = `${goodReadsUrl}${isbn}?${queryString}`;
-    $.getJSON(url).done((data) => {
-        alert(data);
-    })
-
-    // fetch(url)
-    // .then(response => response.json())
-    // .then(responseJson => displayReviewsDetail(responseJson))
-}
-
-function displayReviewsDetail(responseJson) {
-    $('#js-result-content').append(responseJson[reviews_widget]);
 }
 
 function watchResultClick() {
     $('.result-title').on('click', event => {
         event.preventDefault();
         displayBookDetail(event.target.dataset.bookId);
+        getPageId(event.target.text);
     })
+}
+
+function handleError(err) {
+    $('#js-search-results-total').empty().prop('hidden', true);
+    $('#js-search-results-list').empty().parent().prop('hidden', true);
+    $('#js-error-message').prop('hidden', false).text(`Something went wrong: ${err.message}`)
 }
 
 function getResultsData(query) {
@@ -261,9 +325,44 @@ function getResultsData(query) {
 function watchForm() {
     $('#js-search-form').submit(event => {
         event.preventDefault();
+        $('#js-result-content').empty().prop('hidden', true);
         const searchTerm = $('#js-search-term').val();
         getResultsData(searchTerm);
     })
 }
 
 $(watchForm);
+
+
+
+
+
+
+
+
+// const goodReadsUrl = 'https://www.goodreads.com/book/isbn/';
+
+// ${bookReviewCard}
+// const bookReviewCard = getReviewData(isbn);
+
+// function getReviewData(isbn) {
+//     const params = {
+//         callback: '?',
+//         format: 'json',
+//         key: 'OndROFmtllOOQVVFp3Z91g',
+//         user_id: '89700235',
+//     }
+//     const queryString = formatQueryParams(params);
+//     const url = `${goodReadsUrl}${isbn}?${queryString}`;
+//     $.getJSON(url).done((data) => {
+//         alert(data);
+//     })
+
+//     fetch(url)
+//     .then(response => response.json())
+//     .then(responseJson => displayReviewsDetail(responseJson))
+// }
+
+// function displayReviewsDetail(responseJson) {
+//     $('#js-result-content').append(responseJson[reviews_widget]);
+// }
