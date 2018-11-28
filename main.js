@@ -6,7 +6,7 @@ let bookResultsArray = [];
 function generateWikiExtract(bookExtract, pageId) {
     return `
     <p>${bookExtract.query.pages[pageId].extract}</p>
-    <a href="https://en.wikipedia.org/?curid=${pageId}">Go to Wikipedia page</a>
+    <a href="https://en.wikipedia.org/?curid=${pageId}" target="_blank">Full Wikipedia page</a>
     `;
 }
 
@@ -54,7 +54,7 @@ function getPageId(book) {
 function renderVideoElement(video) {
     return `
     <h2>${video.snippet.title}</h2>
-    <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank"><img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to ${video.snippet.title}"></a>
+    <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank"><img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to this video, which is entitled ${video.snippet.title}"></a>
     `;
 }
 
@@ -65,6 +65,18 @@ function displayYouTubeResults(videoResults) {
         const videoElement = renderVideoElement(video);
         $('#js-result-content').append(videoElement);
     }
+}
+
+function generateYouTubeLink(bookTitle) {
+    const bookSearchTerm = encodeURIComponent(bookTitle).replace(/%20/g, '+').replace(/'/g, '%27');
+    return `
+    <a href="https://www.youtube.com/results?search_query=${bookSearchTerm}" target="_blank">More YouTube results</a>
+    `;
+}
+
+function displayYouTubeLink(bookTitle) {
+    const youTubeLink = generateYouTubeLink(bookTitle);
+    $('#js-result-content').append(youTubeLink);
 }
 
 function getYouTubeData(book) {
@@ -79,9 +91,11 @@ function getYouTubeData(book) {
     const url = `${youTubeUrl}?${queryString}`;
     fetch(url)
     .then(response => response.json())
-    .then(responseJson => displayYouTubeResults(responseJson));
+    .then(responseJson => {
+        displayYouTubeResults(responseJson);
+        displayYouTubeLink(params.q);
+    });
 }
-
 
 
 
@@ -97,7 +111,7 @@ function displayResultsTotal(responseJson) {
 
 function generateThumbnailElement(item, thumbnail) {
     return `
-    <a href="${item.volumeInfo.infoLink}" class="result-thumbnail"><img src="${thumbnail}" alt="Image of front cover of text used as thumbnail link to text information page"></a>
+    <a href="${item.volumeInfo.infoLink}" class="result-thumbnail"><img src="${thumbnail}" alt="Image of front cover of book used as thumbnail link to book information page"></a>
     `;
 }
 
@@ -331,9 +345,9 @@ function displayBookDetail(bookId) {
 function generateAmazonLink(book) {
     const bookSearchTerm = encodeURIComponent(book);
     return `
-    <a href="http://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}">
+    <a href="http://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}" target="_blank">
     <img src="http://g-ec2.images-amazon.com/images/G/01/social/api-share/amazon_logo_500500._V323939215_.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
-    Explore this text and other related products at Amazon.com</a>
+    This and related products at Amazon.com</a>
     `;
 }
 
