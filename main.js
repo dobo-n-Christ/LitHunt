@@ -1,6 +1,7 @@
 const googleBooksUrl = 'https://www.googleapis.com/books/v1/volumes';
 const wikiUrl = 'https://en.wikipedia.org/w/api.php';
 const youTubeUrl = 'https://www.googleapis.com/youtube/v3/search';
+const tasteDiveUrl = 'https://tastedive.com/api/similar';
 let bookResultsArray = [];
 
 function generateWikiExtract(bookExtract, pageId) {
@@ -51,9 +52,9 @@ function getPageId(book) {
     })
 }
 
-function renderVideoElement(video) {
+function generateVideoElement(video) {
     return `
-    <h2>${video.snippet.title}</h2>
+    <h3>${video.snippet.title}</h3>
     <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank"><img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to this video, which is entitled ${video.snippet.title}"></a>
     `;
 }
@@ -62,7 +63,7 @@ function displayYouTubeResults(videoResults) {
     const videoResultsArray = videoResults.items;
     for (let i = 0; i < videoResultsArray.length; i++) {
         const video = videoResultsArray[i];
-        const videoElement = renderVideoElement(video);
+        const videoElement = generateVideoElement(video);
         $('#js-result-content').append(videoElement);
     }
 }
@@ -87,7 +88,7 @@ function getYouTubeData(book) {
         type: 'video',
         key: 'AIzaSyCspee-SMBxqnWcQJa3h6wgZKMIBkVooz0'
     }
-    const queryString = formatQueryParams(params).replace(/%20/g, '+').replace(/'/g, '%27');
+    const queryString = formatQueryParams(params);
     const url = `${youTubeUrl}?${queryString}`;
     fetch(url)
     .then(response => response.json())
@@ -97,11 +98,65 @@ function getYouTubeData(book) {
     });
 }
 
+function generateSearchIntro(book) {
+    return `
+    <h4>If you enjoy reading ${book.Info[0].Name}</h4>
+    <h4>TasteDive has the following recommendations for you:</h4>
+    `;
+}
+
+function generateRecElement(rec) {
+    return `
+    <a href="${rec.wUrl}" target="_blank">${rec.Name} (${rec.Type})</a>
+    `;
+}
+
+function displayTasteDiveResults(data) {
+    const tasteDataset = data.Similar;
+    const tasteSearchIntro = generateSearchIntro(tasteDataset);
+    $('#js-result-content').append(tasteSearchIntro);
+    const tasteRecs = tasteDataset.Results;
+    for (let i = 0; i < tasteRecs.length; i++) {
+        const tasteRec = tasteRecs[i];
+        const recElement = generateRecElement(tasteRec);
+        $('#js-result-content').append(recElement);
+    }
+}
+
+function generateTasteDiveLink(title) {
+    const bookSearchTerm = encodeURIComponent(title).replace(/%20/g, '+').replace(/'/g, '%27');
+    return `
+    <a href="https://tastedive.com/like/book:${bookSearchTerm}" target="_blank">More TasteDive recommendations</a>
+    `;
+}
+
+function displayTasteDiveLink(bookTitle) {
+    const tasteDiveLink = generateTasteDiveLink(bookTitle);
+    $('#js-result-content').append(tasteDiveLink);
+}
+
+function getTasteDiveData(book) {
+    const params = {
+        callback: '?',
+        q: `book:${book}`,
+        limit: 10,
+        info: 1,
+        k: '324145-Literatu-VZEN2AQI'
+    }
+    const queryString = formatQueryParams(params).replace(/%3F/g, '?');
+    $.getJSON(tasteDiveUrl, queryString, function(responseJson) {
+        displayTasteDiveResults(responseJson);
+        displayTasteDiveLink(book);
+    })
+}
+
+
 
 
 
 function formatQueryParams(params) {
-    const queryParamItems = Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
+    const queryParamItems = Object.keys(params).map(key => 
+        `${encodeURIComponent(key)}=${encodeURIComponent(params[key]).replace(/%20/g, '+').replace(/'/g, '%27')}`);
     return queryParamItems.join('&');
 }
 
@@ -345,7 +400,7 @@ function displayBookDetail(bookId) {
 function generateAmazonLink(book) {
     const bookSearchTerm = encodeURIComponent(book);
     return `
-    <a href="http://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}" target="_blank">
+    <a href="https://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}" target="_blank">
     <img src="http://g-ec2.images-amazon.com/images/G/01/social/api-share/amazon_logo_500500._V323939215_.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
     This and related products at Amazon.com</a>
     `;
@@ -364,6 +419,7 @@ function watchResultClick() {
         getPageId(bookTitle);
         displayAmazonLink(bookTitle);
         getYouTubeData(bookTitle);
+        getTasteDiveData(bookTitle);
     })
 }
 
@@ -402,34 +458,23 @@ $(watchForm);
 
 
 
-
-
-
-
-
-// const goodReadsUrl = 'https://www.goodreads.com/book/isbn/';
-
-// ${bookReviewCard}
-// const bookReviewCard = getReviewData(isbn);
-
-// function getReviewData(isbn) {
+// function getTasteDiveData(book) {
 //     const params = {
 //         callback: '?',
-//         format: 'json',
-//         key: 'OndROFmtllOOQVVFp3Z91g',
-//         user_id: '89700235',
+//         q: `book:${book}`,
+//         limit: 10,
+//         info: 1,
+//         k: '324145-Literatu-VZEN2AQI'
 //     }
 //     const queryString = formatQueryParams(params);
-//     const url = `${goodReadsUrl}${isbn}?${queryString}`;
-//     $.getJSON(url).done((data) => {
-//         alert(data);
-//     })
-
+//     const url = `${tasteDiveUrl}?${queryString}`;
 //     fetch(url)
 //     .then(response => response.json())
-//     .then(responseJson => displayReviewsDetail(responseJson))
+//     .then(responseJson => {
+//         displayTasteDiveResults(responseJson);
+//         displayTasteDiveLink(params.q);
+//     });
 // }
 
-// function displayReviewsDetail(responseJson) {
-//     $('#js-result-content').append(responseJson[reviews_widget]);
-// }
+
+
