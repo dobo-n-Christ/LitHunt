@@ -1,19 +1,35 @@
 const googleBooksUrl = 'https://www.googleapis.com/books/v1/volumes';
 const wikiUrl = 'https://en.wikipedia.org/w/api.php';
+const youTubeUrl = 'https://www.googleapis.com/youtube/v3/search';
 let bookResultsArray = [];
 
-function generateAmazonLink(book) {
-    const bookSearchTerm = encodeURIComponent(book);
+function generateWikiExtract(bookExtract, pageId) {
     return `
-    <a href="http://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}">
-    <img src="http://g-ec2.images-amazon.com/images/G/01/social/api-share/amazon_logo_500500._V323939215_.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
-    Purchase this and other related products from Amazon.com</a>
+    <p>${bookExtract.query.pages[pageId].extract}</p>
+    <a href="https://en.wikipedia.org/?curid=${pageId}">Go to Wikipedia page</a>
     `;
 }
 
-function displayAmazonLink(book) {
-    const amazonLink = generateAmazonLink(book);
-    $('#js-result-content').append(amazonLink);
+function displayWikiExtract(bookExtract, id) {
+    const wikiExtractCard = generateWikiExtract(bookExtract, id);
+    $('#js-result-content').append(wikiExtractCard);
+}
+
+function getWikiData(id) {
+    const params = {
+        action: 'query',
+        format: 'json',
+        prop: 'extracts',
+        exintro: '',
+        explaintext: '',
+        pageids: id,
+        origin: '*'
+    }
+    const queryString = formatQueryParams(params);
+    const url = `${wikiUrl}?${queryString}`;
+    fetch(url)
+    .then(response => response.json())
+    .then(responseJson => displayWikiExtract(responseJson, id));
 }
 
 function getPageId(book) {
@@ -35,34 +51,40 @@ function getPageId(book) {
     })
 }
 
-function generateWikiExtract(bookExtract, pageId) {
+function renderVideoElement(video) {
     return `
-    <p>${bookExtract.query.pages[pageId].extract}</p>
-    <a href="https://en.wikipedia.org/?curid=${pageId}">Go to Wikipedia page</a>
+    <h2>${video.snippet.title}</h2>
+    <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank"><img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to ${video.snippet.title}"></a>
     `;
 }
 
-function displayWikiExtract(bookExtract, id) {
-    const wikiExtractCard = generateWikiExtract(bookExtract, id);
-    $('#js-result-content').append(wikiExtractCard);
+function displayYouTubeResults(videoResults) {
+    const videoResultsArray = videoResults.items;
+    for (let i = 0; i < videoResultsArray.length; i++) {
+        const video = videoResultsArray[i];
+        const videoElement = renderVideoElement(video);
+        $('#js-result-content').append(videoElement);
+    }
 }
 
-function getWikiData(pageId) {
+function getYouTubeData(book) {
     const params = {
-        action: 'query',
-        format: 'json',
-        prop: 'extracts',
-        exintro: '',
-        explaintext: '',
-        pageids: pageId,
-        origin: '*'
+        part: 'snippet',
+        q: `${book} read`,
+        maxResults: 3,
+        type: 'video',
+        key: 'AIzaSyCspee-SMBxqnWcQJa3h6wgZKMIBkVooz0'
     }
-    const queryString = formatQueryParams(params);
-    const url = `${wikiUrl}?${queryString}`;
+    const queryString = formatQueryParams(params).replace(/%20/g, '+').replace(/'/g, '%27');
+    const url = `${youTubeUrl}?${queryString}`;
     fetch(url)
     .then(response => response.json())
-    .then(responseJson => displayWikiExtract(responseJson, pageId));
+    .then(responseJson => displayYouTubeResults(responseJson));
 }
+
+
+
+
 
 function formatQueryParams(params) {
     const queryParamItems = Object.keys(params).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);
@@ -306,12 +328,28 @@ function displayBookDetail(bookId) {
     watchBackClick();
 }
 
+function generateAmazonLink(book) {
+    const bookSearchTerm = encodeURIComponent(book);
+    return `
+    <a href="http://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}">
+    <img src="http://g-ec2.images-amazon.com/images/G/01/social/api-share/amazon_logo_500500._V323939215_.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
+    Explore this text and other related products at Amazon.com</a>
+    `;
+}
+
+function displayAmazonLink(book) {
+    const amazonLink = generateAmazonLink(book);
+    $('#js-result-content').append(amazonLink);
+}
+
 function watchResultClick() {
     $('.result-title').on('click', event => {
         event.preventDefault();
+        const bookTitle = event.target.text;
         displayBookDetail(event.target.dataset.bookId);
-        getPageId(event.target.text);
-        displayAmazonLink(event.target.text);
+        getPageId(bookTitle);
+        displayAmazonLink(bookTitle);
+        getYouTubeData(bookTitle);
     })
 }
 
