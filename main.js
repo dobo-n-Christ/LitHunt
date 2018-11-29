@@ -100,7 +100,7 @@ function getYouTubeData(book) {
 
 function generateSearchIntro(book) {
     return `
-    <h4>If you enjoy reading ${book.Info[0].Name}</h4>
+    <h4>If you enjoy reading ${book.Info[0].Name},</h4>
     <h4>TasteDive has the following recommendations for you:</h4>
     `;
 }
@@ -111,15 +111,18 @@ function generateRecElement(rec) {
     `;
 }
 
-function displayTasteDiveResults(data) {
+function displayTasteDiveResults(data, title) {
     const tasteDataset = data.Similar;
-    const tasteSearchIntro = generateSearchIntro(tasteDataset);
-    $('#js-result-content').append(tasteSearchIntro);
     const tasteRecs = tasteDataset.Results;
-    for (let i = 0; i < tasteRecs.length; i++) {
-        const tasteRec = tasteRecs[i];
-        const recElement = generateRecElement(tasteRec);
-        $('#js-result-content').append(recElement);
+    if (Array.isArray(tasteRecs) && tasteRecs.length) {
+        const tasteSearchIntro = generateSearchIntro(tasteDataset);
+        $('#js-result-content').append(tasteSearchIntro);
+        for (let i = 0; i < tasteRecs.length; i++) {
+            const tasteRec = tasteRecs[i];
+            const recElement = generateRecElement(tasteRec);
+            $('#js-result-content').append(recElement);
+        }
+        displayTasteDiveLink(title);
     }
 }
 
@@ -144,10 +147,7 @@ function getTasteDiveData(book) {
         k: '324145-Literatu-VZEN2AQI'
     }
     const queryString = formatQueryParams(params).replace(/%3F/g, '?');
-    $.getJSON(tasteDiveUrl, queryString, function(responseJson) {
-        displayTasteDiveResults(responseJson);
-        displayTasteDiveLink(book);
-    })
+    $.getJSON(tasteDiveUrl, queryString, responseJson => displayTasteDiveResults(responseJson, book));
 }
 
 
@@ -274,9 +274,8 @@ function handleItemData(item) {
         <li class="result-element">
             <article>
                 <h3 class="result-title">
-                    <a href="#" data-book-id="${item.id}" class="result-title">${item.volumeInfo.title}</a>
+                    <a href="#" data-book-id="${item.id}" class="result-title">${item.volumeInfo.title}${thumbnail}</a>
                 </h3>
-                ${thumbnail}
                 <div class="result-info">
                     ${pubData}
                 </div>
@@ -412,13 +411,13 @@ function displayAmazonLink(book) {
 }
 
 function watchResultClick() {
-    $('.result-title').on('click', event => {
+    $('a.result-title').on('click', event => {
         event.preventDefault();
         const bookTitle = event.target.text;
         displayBookDetail(event.target.dataset.bookId);
         getPageId(bookTitle);
-        displayAmazonLink(bookTitle);
         getYouTubeData(bookTitle);
+        displayAmazonLink(bookTitle);
         getTasteDiveData(bookTitle);
     })
 }
@@ -475,6 +474,8 @@ $(watchForm);
 //         displayTasteDiveLink(params.q);
 //     });
 // }
+
+// .innerText.trim()
 
 
 
