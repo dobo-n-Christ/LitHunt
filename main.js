@@ -1,3 +1,5 @@
+'use strict';
+
 const googleBooksUrl = 'https://www.googleapis.com/books/v1/volumes';
 const wikiUrl = 'https://en.wikipedia.org/w/api.php';
 const youTubeUrl = 'https://www.googleapis.com/youtube/v3/search';
@@ -274,7 +276,7 @@ function handleItemData(item) {
         <li class="result-element">
             <article>
                 <h3 class="result-title">
-                    <a href="#" data-book-id="${item.id}" class="result-title">${item.volumeInfo.title}</a>
+                    <a href="#" data-book-id="${item.id}" class="js-result-title">${item.volumeInfo.title}</a>
                 </h3>
                 ${thumbnail}
                 <div class="result-info">
@@ -386,7 +388,6 @@ function displayBookDetail(bookId) {
     for (let i = 0; i < bookResultsArray.length; i++) {
         if (bookResultsArray[i].id === bookId) {
             book = bookResultsArray[i];
-            isbn = book.volumeInfo.industryIdentifiers[0].identifier;
             break;
         }
     }
@@ -412,7 +413,7 @@ function displayAmazonLink(book) {
 }
 
 function watchResultClick() {
-    $('a.result-title').on('click', event => {
+    $('a.js-result-title').on('click', event => {
         event.preventDefault();
         console.log("it worked!");
         const bookTitle = event.target.innerText.trim();

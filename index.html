@@ -6,6 +6,7 @@
     <title>Literature App</title>
     <meta name="description" content="An English major's best friend. Get a summary of everything you ever wanted to know about a work of literature or author.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Libre+Baskerville:400,400i,700" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 </head>
@@ -22,9 +23,9 @@
                 <label for="search-term" class="search-note">To search for works by a particular author, place "author:" before the search query <em>without a space</em>, (e.g., "author:shakespeare").</label>
             </form>
         </section>
-        <p id="js-error-message" class="error-message" hidden></p>
-        <h2 id="js-search-results-total" class="search-results-total" hidden></h2>
-        <section id="search-results" hidden>
+        <p id="js-error-message" class="error-message" aria-live="assertive" hidden></p>
+        <h2 id="js-search-results-total" class="search-results-total" aria-live="assertive" hidden></h2>
+        <section id="search-results" aria-live="assertive" hidden>
             <ol id="js-search-results-list"></ol>
         </section>
         <section id="js-result-content" hidden></section>
