@@ -164,9 +164,9 @@ function displayResultsTotal(responseJson) {
     $('#js-search-results-total').prop('hidden', false).html(`${responseJson.totalItems} results`);
 }
 
-function generateThumbnailElement(item, thumbnail) {
+function generateThumbnailElement(thumbnail) {
     return `
-    <a href="${item.volumeInfo.infoLink}" class="result-thumbnail"><img src="${thumbnail}" alt="Image of front cover of book used as thumbnail link to book information page"></a>
+    <img src="${thumbnail}" alt="Image of front cover of book">
     `;
 }
 
@@ -174,12 +174,12 @@ function handleThumbnail(item) {
     const imageData = item.volumeInfo.imageLinks;
     if (imageData) {
         const thumbnail = imageData.smallThumbnail;
-        const thumbnailElement = generateThumbnailElement(item, thumbnail);
+        const thumbnailElement = generateThumbnailElement(thumbnail);
         return thumbnailElement;
     }
     else {
         const thumbnail = "https://books.google.de/googlebooks/images/no_cover_thumb.gif";
-        const thumbnailElement = generateThumbnailElement(item, thumbnail);
+        const thumbnailElement = generateThumbnailElement(thumbnail);
         return thumbnailElement;
     }
 }
@@ -274,8 +274,9 @@ function handleItemData(item) {
         <li class="result-element">
             <article>
                 <h3 class="result-title">
-                    <a href="#" data-book-id="${item.id}" class="result-title">${item.volumeInfo.title}${thumbnail}</a>
+                    <a href="#" data-book-id="${item.id}" class="result-title">${item.volumeInfo.title}</a>
                 </h3>
+                ${thumbnail}
                 <div class="result-info">
                     ${pubData}
                 </div>
@@ -358,7 +359,7 @@ function generateBookDetail(book) {
     return `
     <a href="#" class="back-to-results">Back to Search Results</a>
     <h3>${book.volumeInfo.title}</h3>
-    <div>${handleThumbnail(book)}</div>
+    <a href="${book.volumeInfo.infoLink}" target="_blank">${handleThumbnail(book)}</a>
     <h4>${handleAuthor(book)}</h4>
     <p>${handlePublisher(book)} ${handleDatePublished(book)}</p>
     ${handleIsbn(book)}
@@ -413,7 +414,8 @@ function displayAmazonLink(book) {
 function watchResultClick() {
     $('a.result-title').on('click', event => {
         event.preventDefault();
-        const bookTitle = event.target.text;
+        console.log("it worked!");
+        const bookTitle = event.target.innerText.trim();
         displayBookDetail(event.target.dataset.bookId);
         getPageId(bookTitle);
         getYouTubeData(bookTitle);
@@ -454,28 +456,3 @@ function watchForm() {
 }
 
 $(watchForm);
-
-
-
-// function getTasteDiveData(book) {
-//     const params = {
-//         callback: '?',
-//         q: `book:${book}`,
-//         limit: 10,
-//         info: 1,
-//         k: '324145-Literatu-VZEN2AQI'
-//     }
-//     const queryString = formatQueryParams(params);
-//     const url = `${tasteDiveUrl}?${queryString}`;
-//     fetch(url)
-//     .then(response => response.json())
-//     .then(responseJson => {
-//         displayTasteDiveResults(responseJson);
-//         displayTasteDiveLink(params.q);
-//     });
-// }
-
-// .innerText.trim()
-
-
-
