@@ -15,20 +15,23 @@
         <h1>Literature Search</h1>
     </header>
     <main role="main">
-        <section id="js-search-form">
-            <form>
-                <label for="search-term">Search for a Work of Literature</label>
-                <input type="text" name="search-term" id="js-search-term" placeholder="Search Title, ISBN, Author, etc." required>
-                <input type="submit" value="Search"><br>
-                <label for="search-term" class="search-note">To search for works by a particular author, place "author:" before the search query <em>without a space</em>, (e.g., "author:shakespeare").</label>
-            </form>
-        </section>
-        <p id="js-error-message" class="error-message" aria-live="assertive" hidden></p>
+        <form role="search" id="js-search-form" class="search-form-container">
+            <label for="search-term">Search for a Work of Literature</label>
+            <input type="text" name="search-term" id="js-search-term" placeholder="Search Title, ISBN, Author, etc." required>
+            <input type="submit" value="Search"><br>
+            <label for="search-term" class="search-note">To search for works by a particular author, place "author:" before the search query <em>without a space</em>, (e.g., "author:shakespeare").</label>
+        </form>
+        <p role="alert" id="js-error-message" class="error-message" aria-live="assertive" hidden></p>
         <h2 id="js-search-results-total" class="search-results-total" aria-live="assertive" hidden></h2>
-        <section id="search-results" aria-live="assertive" hidden>
+        <section role="region" id="search-results" aria-live="assertive" hidden>
             <ol id="js-search-results-list"></ol>
         </section>
-        <section id="js-result-content" hidden></section>
+        <section role="region" id="js-back-button" aria-live="assertive" hidden></section>
+        <section role="region" id="js-book-detail-card" class="result-card" aria-live="assertive" hidden></section>
+        <section role="region" id="js-wiki-card" class="result-card" aria-live="polite" hidden></section>
+        <section role="region" id="js-youtube-card" class="result-card" aria-live="polite" hidden></section>
+        <section role="region" id="js-amazon-card" class="result-card" aria-live="polite" hidden></section>
+        <section role="region" id="js-tastedive-card" class="result-card" aria-live="polite" hidden></section>
     </main>
     <script src="main.js"></script>
 </body>

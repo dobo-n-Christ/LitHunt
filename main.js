@@ -6,156 +6,6 @@ const youTubeUrl = 'https://www.googleapis.com/youtube/v3/search';
 const tasteDiveUrl = 'https://tastedive.com/api/similar';
 let bookResultsArray = [];
 
-function generateWikiExtract(bookExtract, pageId) {
-    return `
-    <p>${bookExtract.query.pages[pageId].extract}</p>
-    <a href="https://en.wikipedia.org/?curid=${pageId}" target="_blank">Full Wikipedia page</a>
-    `;
-}
-
-function displayWikiExtract(bookExtract, id) {
-    const wikiExtractCard = generateWikiExtract(bookExtract, id);
-    $('#js-result-content').append(wikiExtractCard);
-}
-
-function getWikiData(id) {
-    const params = {
-        action: 'query',
-        format: 'json',
-        prop: 'extracts',
-        exintro: '',
-        explaintext: '',
-        pageids: id,
-        origin: '*'
-    }
-    const queryString = formatQueryParams(params);
-    const url = `${wikiUrl}?${queryString}`;
-    fetch(url)
-    .then(response => response.json())
-    .then(responseJson => displayWikiExtract(responseJson, id));
-}
-
-function getPageId(book) {
-    const params = {
-        action: 'query',
-        format: 'json',
-        list: 'search',
-        srlimit: 1,
-        srsearch: book,
-        origin: '*'
-    }
-    const queryString = formatQueryParams(params);
-    const url = `${wikiUrl}?${queryString}`;
-    fetch(url)
-    .then(response => response.json())
-    .then(responseJson => {
-        const pageId = responseJson.query.search[0].pageid;
-        getWikiData(pageId);
-    })
-}
-
-function generateVideoElement(video) {
-    return `
-    <h3>${video.snippet.title}</h3>
-    <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank"><img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to this video, which is entitled ${video.snippet.title}"></a>
-    `;
-}
-
-function displayYouTubeResults(videoResults) {
-    const videoResultsArray = videoResults.items;
-    for (let i = 0; i < videoResultsArray.length; i++) {
-        const video = videoResultsArray[i];
-        const videoElement = generateVideoElement(video);
-        $('#js-result-content').append(videoElement);
-    }
-}
-
-function generateYouTubeLink(bookTitle) {
-    const bookSearchTerm = encodeURIComponent(bookTitle).replace(/%20/g, '+').replace(/'/g, '%27');
-    return `
-    <a href="https://www.youtube.com/results?search_query=${bookSearchTerm}" target="_blank">More YouTube results</a>
-    `;
-}
-
-function displayYouTubeLink(bookTitle) {
-    const youTubeLink = generateYouTubeLink(bookTitle);
-    $('#js-result-content').append(youTubeLink);
-}
-
-function getYouTubeData(book) {
-    const params = {
-        part: 'snippet',
-        q: `${book} read`,
-        maxResults: 3,
-        type: 'video',
-        key: 'AIzaSyCspee-SMBxqnWcQJa3h6wgZKMIBkVooz0'
-    }
-    const queryString = formatQueryParams(params);
-    const url = `${youTubeUrl}?${queryString}`;
-    fetch(url)
-    .then(response => response.json())
-    .then(responseJson => {
-        displayYouTubeResults(responseJson);
-        displayYouTubeLink(params.q);
-    });
-}
-
-function generateSearchIntro(book) {
-    return `
-    <h4>If you enjoy reading ${book.Info[0].Name},</h4>
-    <h4>TasteDive has the following recommendations for you:</h4>
-    `;
-}
-
-function generateRecElement(rec) {
-    return `
-    <a href="${rec.wUrl}" target="_blank">${rec.Name} (${rec.Type})</a>
-    `;
-}
-
-function displayTasteDiveResults(data, title) {
-    const tasteDataset = data.Similar;
-    const tasteRecs = tasteDataset.Results;
-    if (Array.isArray(tasteRecs) && tasteRecs.length) {
-        const tasteSearchIntro = generateSearchIntro(tasteDataset);
-        $('#js-result-content').append(tasteSearchIntro);
-        for (let i = 0; i < tasteRecs.length; i++) {
-            const tasteRec = tasteRecs[i];
-            const recElement = generateRecElement(tasteRec);
-            $('#js-result-content').append(recElement);
-        }
-        displayTasteDiveLink(title);
-    }
-}
-
-function generateTasteDiveLink(title) {
-    const bookSearchTerm = encodeURIComponent(title).replace(/%20/g, '+').replace(/'/g, '%27');
-    return `
-    <a href="https://tastedive.com/like/book:${bookSearchTerm}" target="_blank">More TasteDive recommendations</a>
-    `;
-}
-
-function displayTasteDiveLink(bookTitle) {
-    const tasteDiveLink = generateTasteDiveLink(bookTitle);
-    $('#js-result-content').append(tasteDiveLink);
-}
-
-function getTasteDiveData(book) {
-    const params = {
-        callback: '?',
-        q: `book:${book}`,
-        limit: 10,
-        info: 1,
-        k: '324145-Literatu-VZEN2AQI'
-    }
-    const queryString = formatQueryParams(params).replace(/%3F/g, '?');
-    $.getJSON(tasteDiveUrl, queryString, responseJson => displayTasteDiveResults(responseJson, book));
-}
-
-
-
-
-
 function formatQueryParams(params) {
     const queryParamItems = Object.keys(params).map(key => 
         `${encodeURIComponent(key)}=${encodeURIComponent(params[key]).replace(/%20/g, '+').replace(/'/g, '%27')}`);
@@ -357,9 +207,19 @@ function handleDetailSummary(item) {
     }
 }
 
+function generateBackButton() {
+    return `
+    <a href="#" class="back-button">Back to Search Results</a>
+    `;
+}
+
+function displayBackButton() {
+    const backButton = generateBackButton();
+    $('#js-back-button').prop('hidden', false).html(backButton);
+}
+
 function generateBookDetail(book) {
     return `
-    <a href="#" class="back-to-results">Back to Search Results</a>
     <h3>${book.volumeInfo.title}</h3>
     <a href="${book.volumeInfo.infoLink}" target="_blank">${handleThumbnail(book)}</a>
     <h4>${handleAuthor(book)}</h4>
@@ -368,19 +228,6 @@ function generateBookDetail(book) {
     ${handleDetailSummary(book)}
     <a href="${book.volumeInfo.previewLink}" target="_blank">Preview this book</a>
     `;
-}
-
-function returnToSearchResults() {
-    $('#js-search-results-total').prop('hidden', false);
-    $('#js-search-results-list').parent().prop('hidden', false);
-    $('#js-result-content').empty().prop('hidden', true);
-}
-
-function watchBackClick() {
-    $('.back-to-results').on('click', event => {
-        event.preventDefault();
-        returnToSearchResults();
-    })
 }
 
 function displayBookDetail(bookId) {
@@ -394,8 +241,101 @@ function displayBookDetail(bookId) {
     const bookDetailCard = generateBookDetail(book);
     $('#js-search-results-total').prop('hidden', true);
     $('#js-search-results-list').parent().prop('hidden', true);
-    $('#js-result-content').prop('hidden', false).html(`${bookDetailCard}`);
-    watchBackClick();
+    $('#js-book-detail-card').prop('hidden', false).html(bookDetailCard);
+}
+
+function generateWikiExtract(bookExtract, pageId) {
+    return `
+    <p>${bookExtract.query.pages[pageId].extract}</p>
+    <a href="https://en.wikipedia.org/?curid=${pageId}" target="_blank">Full Wikipedia page</a>
+    `;
+}
+
+function displayWikiExtract(bookExtract, id) {
+    const wikiExtractCard = generateWikiExtract(bookExtract, id);
+    $('#js-wiki-card').prop('hidden', false).html(wikiExtractCard);
+}
+
+function getWikiData(id) {
+    const params = {
+        action: 'query',
+        format: 'json',
+        prop: 'extracts',
+        exintro: '',
+        explaintext: '',
+        pageids: id,
+        origin: '*'
+    }
+    const queryString = formatQueryParams(params);
+    const url = `${wikiUrl}?${queryString}`;
+    fetch(url)
+    .then(response => response.json())
+    .then(responseJson => displayWikiExtract(responseJson, id));
+}
+
+function getPageId(book) {
+    const params = {
+        action: 'query',
+        format: 'json',
+        list: 'search',
+        srlimit: 1,
+        srsearch: book,
+        origin: '*'
+    }
+    const queryString = formatQueryParams(params);
+    const url = `${wikiUrl}?${queryString}`;
+    fetch(url)
+    .then(response => response.json())
+    .then(responseJson => {
+        const pageId = responseJson.query.search[0].pageid;
+        getWikiData(pageId);
+    })
+}
+
+function generateVideoElement(video) {
+    return `
+    <h3>${video.snippet.title}</h3>
+    <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank"><img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to this video, which is entitled ${video.snippet.title}"></a>
+    `;
+}
+
+function generateYouTubeLink(bookTitle) {
+    const bookSearchTerm = encodeURIComponent(bookTitle).replace(/%20/g, '+').replace(/'/g, '%27');
+    return `
+    <a href="https://www.youtube.com/results?search_query=${bookSearchTerm}" target="_blank">More YouTube results</a>
+    `;
+}
+
+function displayYouTubeLink(bookTitle) {
+    const youTubeLink = generateYouTubeLink(bookTitle);
+    $('#js-youtube-card').prop('hidden', false).append(youTubeLink);
+}
+
+function displayYouTubeResults(videoResults, bookTerm) {
+    const videoResultsArray = videoResults.items;
+    for (let i = 0; i < videoResultsArray.length; i++) {
+        const video = videoResultsArray[i];
+        const videoElement = generateVideoElement(video);
+        $('#js-youtube-card').append(videoElement);
+    }
+    displayYouTubeLink(bookTerm);
+}
+
+function getYouTubeData(book) {
+    const params = {
+        part: 'snippet',
+        q: `${book} read`,
+        maxResults: 3,
+        type: 'video',
+        key: 'AIzaSyCspee-SMBxqnWcQJa3h6wgZKMIBkVooz0'
+    }
+    const queryString = formatQueryParams(params);
+    const url = `${youTubeUrl}?${queryString}`;
+    fetch(url)
+    .then(response => response.json())
+    .then(responseJson => {
+        displayYouTubeResults(responseJson, params.q);
+    });
 }
 
 function generateAmazonLink(book) {
@@ -409,19 +349,85 @@ function generateAmazonLink(book) {
 
 function displayAmazonLink(book) {
     const amazonLink = generateAmazonLink(book);
-    $('#js-result-content').append(amazonLink);
+    $('#js-amazon-card').prop('hidden', false).html(amazonLink);
+}
+
+function generateSearchIntro(book) {
+    return `
+    <h4>If you enjoy reading ${book.Info[0].Name},</h4>
+    <h4>TasteDive has the following recommendations for you:</h4>
+    `;
+}
+
+function generateRecElement(rec) {
+    return `
+    <a href="${rec.wUrl}" target="_blank">${rec.Name} (${rec.Type})</a>
+    `;
+}
+
+function generateTasteDiveLink(title) {
+    const bookSearchTerm = encodeURIComponent(title).replace(/%20/g, '+').replace(/'/g, '%27');
+    return `
+    <a href="https://tastedive.com/like/book:${bookSearchTerm}" target="_blank">More TasteDive recommendations</a>
+    `;
+}
+
+function displayTasteDiveLink(bookTitle) {
+    const tasteDiveLink = generateTasteDiveLink(bookTitle);
+    $('#js-tastedive-card').prop('hidden', false).append(tasteDiveLink);
+}
+
+function displayTasteDiveResults(data, title) {
+    const tasteDataset = data.Similar;
+    const tasteRecs = tasteDataset.Results;
+    if (Array.isArray(tasteRecs) && tasteRecs.length) {
+        const tasteSearchIntro = generateSearchIntro(tasteDataset);
+        $('#js-tastedive-card').html(tasteSearchIntro);
+        for (let i = 0; i < tasteRecs.length; i++) {
+            const tasteRec = tasteRecs[i];
+            const recElement = generateRecElement(tasteRec);
+            $('#js-tastedive-card').append(recElement);
+        }
+        displayTasteDiveLink(title);
+    }
+}
+
+function getTasteDiveData(book) {
+    const params = {
+        callback: '?',
+        q: `book:${book}`,
+        limit: 10,
+        info: 1,
+        k: '324145-Literatu-VZEN2AQI'
+    }
+    const queryString = formatQueryParams(params).replace(/%3F/g, '?');
+    $.getJSON(tasteDiveUrl, queryString, responseJson => displayTasteDiveResults(responseJson, book));
+}
+
+function returnToSearchResults() {
+    $('#js-search-results-total').prop('hidden', false);
+    $('#js-search-results-list').parent().prop('hidden', false);
+    emptyhideCards();
+}
+
+function watchBackClick() {
+    $('.back-button').on('click', event => {
+        event.preventDefault();
+        returnToSearchResults();
+    })
 }
 
 function watchResultClick() {
     $('a.js-result-title').on('click', event => {
         event.preventDefault();
-        console.log("it worked!");
         const bookTitle = event.target.innerText.trim();
+        displayBackButton();
         displayBookDetail(event.target.dataset.bookId);
         getPageId(bookTitle);
         getYouTubeData(bookTitle);
         displayAmazonLink(bookTitle);
         getTasteDiveData(bookTitle);
+        watchBackClick();
     })
 }
 
@@ -447,12 +453,16 @@ function getResultsData(query) {
     .catch(handleError);
 }
 
+function emptyhideCards() {
+    $('#js-back-button, #js-book-detail-card, #js-wiki-card, #js-youtube-card, #js-amazon-card, #js-tastedive-card').empty().prop('hidden', true);
+}
+
 function watchForm() {
     $('#js-search-form').submit(event => {
         event.preventDefault();
-        $('#js-result-content').empty().prop('hidden', true);
         const searchTerm = $('#js-search-term').val();
         getResultsData(searchTerm);
+        emptyhideCards();
     })
 }
 
