@@ -13,7 +13,7 @@ function formatQueryParams(params) {
 }
 
 function displayResultsTotal(responseJson) {
-    $('#js-search-results-total').prop('hidden', false).html(`${responseJson.totalItems} results`);
+    $('#js-search-results-total').html(`Your LitHunt returned ${responseJson.totalItems} results:`);
 }
 
 function generateThumbnailElement(thumbnail) {
@@ -149,15 +149,14 @@ function generateResultElement(response, i) {
 }
 
 function displayResults(responseJson) {
-    $('#js-error-message').prop('hidden', true).empty();
+    hideGrandparent('#js-error-message');
     $('#js-search-results-list').empty();
     displayResultsTotal(responseJson);
     for (let i = 0; i < responseJson.items.length; i++) {
         const resultElement = generateResultElement(responseJson, i);
-        const listContainer = $('#js-search-results-list');
-        listContainer.parent().prop('hidden', false);
-		listContainer.append(resultElement);
+		$('#js-search-results-list').append(resultElement);
     }
+    unhideGreatGrandparent('#js-search-results-list');
 }
 
 function handleIsbn(book) {
@@ -207,17 +206,6 @@ function handleDetailSummary(item) {
     }
 }
 
-function generateBackButton() {
-    return `
-    <a href="#" class="back-button">Back to Search Results</a>
-    `;
-}
-
-function displayBackButton() {
-    const backButton = generateBackButton();
-    $('#js-back-button').prop('hidden', false).html(backButton);
-}
-
 function generateBookDetail(book) {
     return `
     <h3>${book.volumeInfo.title}</h3>
@@ -239,9 +227,9 @@ function displayBookDetail(bookId) {
         }
     }
     const bookDetailCard = generateBookDetail(book);
-    $('#js-search-results-total').prop('hidden', true);
-    $('#js-search-results-list').parent().prop('hidden', true);
-    $('#js-book-detail-card').prop('hidden', false).html(bookDetailCard);
+    hideGrandparent('#js-search-results-total');
+    $('#js-book-detail-card').html(bookDetailCard);
+    unhideGrandparent('#js-book-detail-card');
 }
 
 function generateWikiExtract(bookExtract, pageId) {
@@ -253,7 +241,8 @@ function generateWikiExtract(bookExtract, pageId) {
 
 function displayWikiExtract(bookExtract, id) {
     const wikiExtractCard = generateWikiExtract(bookExtract, id);
-    $('#js-wiki-card').prop('hidden', false).html(wikiExtractCard);
+    $('#js-wiki-card').html(wikiExtractCard);
+    unhideGrandparent('#js-wiki-card');
 }
 
 function getWikiData(id) {
@@ -308,24 +297,27 @@ function generateYouTubeLink(bookTitle) {
 
 function displayYouTubeLink(bookTitle) {
     const youTubeLink = generateYouTubeLink(bookTitle);
-    $('#js-youtube-card').prop('hidden', false).append(youTubeLink);
+    $('#js-youtube-card').append(youTubeLink);
+    unhideGrandparent('#js-youtube-card');
 }
 
 function displayYouTubeResults(videoResults, bookTerm) {
     const videoResultsArray = videoResults.items;
-    for (let i = 0; i < videoResultsArray.length; i++) {
-        const video = videoResultsArray[i];
-        const videoElement = generateVideoElement(video);
-        $('#js-youtube-card').append(videoElement);
+    if (videoResultsArray.length > 0) {
+        for (let i = 0; i < videoResultsArray.length; i++) {
+            const video = videoResultsArray[i];
+            const videoElement = generateVideoElement(video);
+            $('#js-youtube-card').append(videoElement);
+        }
+        displayYouTubeLink(bookTerm);
     }
-    displayYouTubeLink(bookTerm);
 }
 
 function getYouTubeData(book) {
     const params = {
         part: 'snippet',
-        q: `${book} read`,
-        maxResults: 3,
+        q: `${book} read|book|novel|poem`,
+        maxResults: 4,
         type: 'video',
         key: 'AIzaSyCspee-SMBxqnWcQJa3h6wgZKMIBkVooz0'
     }
@@ -341,15 +333,23 @@ function getYouTubeData(book) {
 function generateAmazonLink(book) {
     const bookSearchTerm = encodeURIComponent(book);
     return `
-    <a href="https://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}" target="_blank">
-    <img src="http://g-ec2.images-amazon.com/images/G/01/social/api-share/amazon_logo_500500._V323939215_.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
+    https://www.amazon.com/s?url=search-alias%3Daps&field-keywords=${bookSearchTerm}
+    `;
+}
+
+function generateAmazonElement(book) {
+    const amazonLink = generateAmazonLink(book);
+    return `
+    <a href="${amazonLink}" target="_blank">
+    <img src="Images/amazon.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
     This and related products at Amazon.com</a>
     `;
 }
 
 function displayAmazonLink(book) {
-    const amazonLink = generateAmazonLink(book);
-    $('#js-amazon-card').prop('hidden', false).html(amazonLink);
+    const amazonElement = generateAmazonElement(book);
+    $('#js-amazon-card').html(amazonElement);
+    unhideGrandparent('#js-amazon-card');
 }
 
 function generateSearchIntro(book) {
@@ -361,9 +361,10 @@ function generateSearchIntro(book) {
 
 function generateRecElement(rec) {
     return `
-    <a href="${rec.wUrl}" target="_blank">${rec.Name} (${rec.Type})</a>
+    <a href="${generateAmazonLink(rec.Name)}" target="_blank">${rec.Name} (${rec.Type})</a>
     `;
 }
+// ${rec.wUrl}
 
 function generateTasteDiveLink(title) {
     const bookSearchTerm = encodeURIComponent(title).replace(/%20/g, '+').replace(/'/g, '%27');
@@ -374,7 +375,7 @@ function generateTasteDiveLink(title) {
 
 function displayTasteDiveLink(bookTitle) {
     const tasteDiveLink = generateTasteDiveLink(bookTitle);
-    $('#js-tastedive-card').prop('hidden', false).append(tasteDiveLink);
+    $('#js-tastedive-card').append(tasteDiveLink).prop('hidden', false);
 }
 
 function displayTasteDiveResults(data, title) {
@@ -401,13 +402,17 @@ function getTasteDiveData(book) {
         k: '324145-Literatu-VZEN2AQI'
     }
     const queryString = formatQueryParams(params).replace(/%3F/g, '?');
-    $.getJSON(tasteDiveUrl, queryString, responseJson => displayTasteDiveResults(responseJson, book));
+    $.getJSON(tasteDiveUrl, queryString, responseJson => {
+        displayTasteDiveResults(responseJson, book)
+    });
 }
 
 function returnToSearchResults() {
-    $('#js-search-results-total').prop('hidden', false);
-    $('#js-search-results-list').parent().prop('hidden', false);
-    emptyhideCards();
+    $('html, body').scrollTop($('main').offset().top);
+    // window.scrollTo(0, 0);
+    unhideGrandparent('#js-search-results-total');
+    hideCards();
+    emptyCards();
 }
 
 function watchBackClick() {
@@ -419,9 +424,13 @@ function watchBackClick() {
 
 function watchResultClick() {
     $('a.js-result-title').on('click', event => {
+        $('html, body').scrollTop($('main').offset().top);
+        // $('body').animate({ scrollTop: 410}, 800);
         event.preventDefault();
+ 
+        $('#js-back-button').prop('hidden', false);
+        // window.scrollTo(0, 410);
         const bookTitle = event.target.innerText.trim();
-        displayBackButton();
         displayBookDetail(event.target.dataset.bookId);
         getPageId(bookTitle);
         getYouTubeData(bookTitle);
@@ -432,9 +441,12 @@ function watchResultClick() {
 }
 
 function handleError(err) {
-    $('#js-search-results-total').empty().prop('hidden', true);
-    $('#js-search-results-list').empty().parent().prop('hidden', true);
-    $('#js-error-message').prop('hidden', false).text(`Something went wrong: ${err.message}`)
+    hideGrandparent('#js-search-results-total');
+    hideGrandparent('#js-top-button');
+    $('#js-search-results-total').empty();
+    $('#js-search-results-list').empty();
+    $('#js-error-message').text(`Something went wrong: ${err.message}`);
+    unhideGrandparent('#js-error-message');
 }
 
 function getResultsData(query) {
@@ -446,15 +458,54 @@ function getResultsData(query) {
     fetch(url)
     .then(response => response.json())
     .then(responseJson => {
+        hideGrandparent('header');
+        hideGrandparent('#js-search-form');
+        // $('html, body').animate({
+        //     scrollTop: $('main').offset().top
+        // }, 800);
+        // $('body').animate({ scrollTop: 410 }, 800);
         bookResultsArray = responseJson.items;
         displayResults(responseJson);
         watchResultClick();
+        unhideGrandparent('#js-top-button');
     })
     .catch(handleError);
 }
 
-function emptyhideCards() {
-    $('#js-back-button, #js-book-detail-card, #js-wiki-card, #js-youtube-card, #js-amazon-card, #js-tastedive-card').empty().prop('hidden', true);
+function hideGreatGrandparent(id) {
+    $(id).parent().parent().parent().prop('hidden', true);
+}
+
+function unhideGreatGrandparent(id) {
+    $(id).parent().parent().parent().prop('hidden', false);
+}
+
+function hideGrandparent(id) {
+    $(id).parent().parent().prop('hidden', true);
+}
+
+function unhideGrandparent(id) {
+    $(id).parent().parent().prop('hidden', false);
+}
+
+function hideParent(id) {
+    $(id).parent().prop('hidden', true);
+}
+
+function unhideParent(id) {
+    $(id).parent().prop('hidden', false);
+}
+
+function hideCards() {
+    $('#js-back-button').prop('hidden', true);
+    hideGrandparent('#js-book-detail-card');
+    hideGrandparent('#js-wiki-card');
+    hideGrandparent('#js-youtube-card');
+    hideGrandparent('#js-amazon-card');
+}
+
+function emptyCards() {
+    $('#js-youtube-card, #js-amazon-card, #js-tastedive-card').empty();
 }
 
 function watchForm() {
@@ -462,7 +513,8 @@ function watchForm() {
         event.preventDefault();
         const searchTerm = $('#js-search-term').val();
         getResultsData(searchTerm);
-        emptyhideCards();
+        hideCards();
+        emptyCards();
     })
 }
 
