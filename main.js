@@ -340,8 +340,8 @@ function generateAmazonLink(book) {
 function generateAmazonElement(book) {
     const amazonLink = generateAmazonLink(book);
     return `
-    <a href="${amazonLink}" target="_blank">
-    <img src="Images/amazon.png" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
+    <a href="${amazonLink}" class="amazon-link" target="_blank">
+    <img src="Images/amazon.png" class="amazon-logo" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
     This and related products at Amazon.com</a>
     `;
 }

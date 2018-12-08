@@ -198,7 +198,7 @@ header {
 }
 
 h2, #search-results, .result-card {
-    font-family: 'Baskerville', 'Garamond', serif;
+    font-family: 'Libre Baskerville', 'Garamond', serif;
     background-color: bisque;
     opacity: 0.9;
     border-radius: 6px;
@@ -226,4 +226,14 @@ h2, #search-results, .result-card {
     z-index: 1;
     font-size: 20px;
     padding: 0;
+}
+
+
+.amazon-logo {
+    width: 100%;
+    padding: 60px 60px 20px;
+}
+
+.amazon-card {
+    text-align: center;
 }
