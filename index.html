@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-12">
             <header role="banner">
-                <h1>LitHunt</h1>
+                <h1 class="js-website-logo">Lit Hunt</h1><br>
                 <h2>Search for any work of literature!</h2>
             </header>
         </div>    
@@ -36,10 +36,10 @@
             <p role="alert" id="js-error-message" class="error-message" aria-live="assertive"></p>
         </div>
     </div>
-    <nav role="navigation">
-        <h1>LitHunt</h1>
+    <nav role="navigation" hidden>
+        <h1 class="js-website-logo">LitHunt</h1>
         <form role="search" id="js-search-form-nav" class="search-form-nav">
-            <input type="text" name="search-term" id="js-search-term" class="search-box-nav" autocomplete="off" placeholder="Title, ISBN, Author, etc." required>
+            <input type="text" name="search-term-nav" id="js-search-term-nav" class="search-box-nav" autocomplete="off" required>
             <input type="submit" class="search-button-nav" value="">
         </form>
     </nav>
@@ -48,7 +48,7 @@
             <div class="col-12">
                 <h2 id="js-search-results-total" class="search-results-total" aria-live="assertive"></h2>
                 <section role="region" id="search-results" aria-live="assertive">
-                    <ol id="js-search-results-list"></ol>
+                    <ol id="js-search-results-list" class="search-results-list"></ol>
                 </section>
             </div>
         </div>
@@ -65,11 +65,15 @@
         </div>
         <div class="row" hidden>
             <div class="col-6">
-                <section role="region" id="js-youtube-card" class="result-card" aria-live="polite"></section>
+                <section role="region" id="js-youtube-card" class="result-card youtube-card" aria-live="polite"></section>
             </div>
             <div class="col-6">
                 <section role="region" id="js-amazon-card" class="result-card amazon-card" aria-live="polite"></section>
-                <section role="region" id="js-tastedive-card" class="result-card" aria-live="polite" hidden></section>
+                <section role="region" id="js-tastedive-card" class="result-card" aria-live="polite" hidden>
+                    <h4 id="js-tastedive-card-intro"></h4>
+                    <ul id="js-tastedive-card-list" class="tastedive-list"></ul>
+                    <p id="js-tastedive-card-link"></p>
+                </section>
             </div>
         </div>
         <div class="row" hidden>

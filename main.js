@@ -126,7 +126,7 @@ function handleItemData(item) {
         <li class="result-element">
             <article>
                 <h3 class="result-title">
-                    <a href="#" data-book-id="${item.id}" class="js-result-title">${item.volumeInfo.title}</a>
+                    <a href="#" data-book-id="${item.id}" class="js-result-title result-title">${item.volumeInfo.title}</a>
                 </h3>
                 ${thumbnail}
                 <div class="result-info">
@@ -165,14 +165,14 @@ function handleIsbn(book) {
         if (identArray.length > 1) {
             if (identArray[0].type.endsWith('10')) {
                 return `
-                <ul>
+                <ul class="isbn">
                     <li>ISBN-10: ${identArray[0].identifier}</li>
                     <li>ISBN-13: ${identArray[1].identifier}</li>
                 </ul>
                 `;
             }
             return `
-            <ul>
+            <ul class="isbn">
                 <li>ISBN-10: ${identArray[1].identifier}</li>
                 <li>ISBN-13: ${identArray[0].identifier}</li>
             </ul>
@@ -180,7 +180,7 @@ function handleIsbn(book) {
         }
         else if (identArray[0].type.startsWith('ISBN')) {
             return `
-            <ul>
+            <ul class="isbn">
                 <li>ISBN: ${identArray[0].identifier}</li>
             </ul>
             `;
@@ -291,7 +291,7 @@ function generateVideoElement(video) {
 function generateYouTubeLink(bookTitle) {
     const bookSearchTerm = encodeURIComponent(bookTitle).replace(/%20/g, '+').replace(/'/g, '%27');
     return `
-    <a href="https://www.youtube.com/results?search_query=${bookSearchTerm}" target="_blank">More YouTube results</a>
+    <a href="https://www.youtube.com/results?search_query=${bookSearchTerm}" class="youtube-link" target="_blank">More YouTube results</a>
     `;
 }
 
@@ -354,14 +354,16 @@ function displayAmazonLink(book) {
 
 function generateSearchIntro(book) {
     return `
-    <h4>If you enjoy reading ${book.Info[0].Name},</h4>
-    <h4>TasteDive has the following recommendations for you:</h4>
+    If you enjoy reading ${book.Info[0].Name},<br>
+    TasteDive has the following recommendations for you:
     `;
 }
 
 function generateRecElement(rec) {
     return `
-    <a href="${generateAmazonLink(rec.Name)}" target="_blank">${rec.Name} (${rec.Type})</a>
+    <li>
+        <a href="${generateAmazonLink(rec.Name)}" target="_blank">${rec.Name} (${rec.Type})</a>
+    </li>
     `;
 }
 // ${rec.wUrl}
@@ -375,7 +377,7 @@ function generateTasteDiveLink(title) {
 
 function displayTasteDiveLink(bookTitle) {
     const tasteDiveLink = generateTasteDiveLink(bookTitle);
-    $('#js-tastedive-card').append(tasteDiveLink).prop('hidden', false);
+    $('#js-tastedive-card-link').html(tasteDiveLink);
 }
 
 function displayTasteDiveResults(data, title) {
@@ -383,13 +385,14 @@ function displayTasteDiveResults(data, title) {
     const tasteRecs = tasteDataset.Results;
     if (Array.isArray(tasteRecs) && tasteRecs.length) {
         const tasteSearchIntro = generateSearchIntro(tasteDataset);
-        $('#js-tastedive-card').html(tasteSearchIntro);
+        $('#js-tastedive-card-intro').html(tasteSearchIntro);
         for (let i = 0; i < tasteRecs.length; i++) {
             const tasteRec = tasteRecs[i];
             const recElement = generateRecElement(tasteRec);
-            $('#js-tastedive-card').append(recElement);
+            $('#js-tastedive-card-list').append(recElement);
         }
         displayTasteDiveLink(title);
+        unhideParent('#js-tastedive-card-list');
     }
 }
 
@@ -458,6 +461,7 @@ function getResultsData(query) {
     fetch(url)
     .then(response => response.json())
     .then(responseJson => {
+        $('nav').prop('hidden', false);
         hideGrandparent('header');
         hideGrandparent('#js-search-form');
         // $('html, body').animate({
@@ -502,20 +506,45 @@ function hideCards() {
     hideGrandparent('#js-wiki-card');
     hideGrandparent('#js-youtube-card');
     hideGrandparent('#js-amazon-card');
+    hideParent('#js-tastedive-card-list');
 }
 
 function emptyCards() {
-    $('#js-youtube-card, #js-amazon-card, #js-tastedive-card').empty();
+    $('#js-youtube-card, #js-amazon-card, #js-tastedive-card-intro, #js-tastedive-card-list, #js-tastedive-card-link').empty();
 }
 
-function watchForm() {
-    $('#js-search-form').submit(event => {
+function watchNavForm() {
+    $('#js-search-form-nav').submit(event => {
         event.preventDefault();
-        const searchTerm = $('#js-search-term').val();
+        const searchTerm = $('#js-search-term-nav').val();
         getResultsData(searchTerm);
         hideCards();
         emptyCards();
     })
 }
 
-$(watchForm);
+function watchForm() {
+    $('#js-search-form').submit(event => {
+        event.preventDefault();
+        const searchTerm = $('#js-search-term').val();
+        $('#js-search-term-nav').val(searchTerm);
+        getResultsData(searchTerm);
+        hideCards();
+        emptyCards();
+        watchNavForm();
+    })
+}
+
+function watchLogo() {
+    $('.js-website-logo').click(event => {
+        event.preventDefault();
+        location.reload();
+    })
+}
+
+function handleApp() {
+    watchForm();
+    watchLogo();
+}
+
+$(handleApp);
