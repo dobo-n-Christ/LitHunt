@@ -537,6 +537,7 @@ function displayPageNumber() {
 function watchNextClick() {
     $('#js-next-button').click(event => {
         event.preventDefault();
+        event.stopImmediatePropagation();
         resultsPageNumber = ++resultsPageNumber;
         const newStartIndex = googleBooksParams.startIndex + 10;
         googleBooksParams.startIndex = newStartIndex;

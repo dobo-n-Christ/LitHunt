@@ -17,8 +17,15 @@ html {
 }
 
 body {
-    font-family: 'Lato', 'Helvetica', sans-serif;
     font-family: 'Libre Baskerville', 'Garamond', serif;
+    font-family: 'Lato', 'Helvetica', sans-serif;
+}
+
+header {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 header h1 {
@@ -34,9 +41,6 @@ header h1 {
     padding: 10px;
     cursor: pointer;
     box-shadow: 2px 2px 8px black;
-}
-
-header h1 a {
     text-decoration: none; 
 }
 
@@ -50,13 +54,57 @@ h2 {
     box-shadow: 1px 1px 10px black;
 }
 
+.search-form {
+    margin-top: 10px;
+    background-color: #C8DAFF;
+    background-color: bisque;
+    border-radius: 6px;
+    text-align: center;
+    padding: 20px 0;
+    color: #000036;
+    color: #3d1410;
+    opacity: 0.9;
+    box-shadow: 1px 1px 10px black;
+}
+
+.search-box {
+    width: 80%;
+    height: auto;
+    padding: 4px;
+    font-size: 16px;
+    vertical-align: top;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    margin-right: 5px;
+}
+
+.search-button {
+    background: url('Images/icons8-search-50bisque.png');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 26px;
+    width: 26px;
+    vertical-align: top;
+    border-radius: 6px;
+    background-color: #3D1410;
+    color: bisque;
+    cursor: pointer;
+}
+
+.search-note {
+    font-size: 13px;
+    display: block;
+    padding: 0 6px;
+}
+
 nav {
     z-index: 1;
     position: fixed;
     top: 0;
     width: 100%;
     background-color: bisque;
-    /* background-color: #BFAB93; */
     overflow: hidden;
     box-shadow: 1px 1px 10px black;
 }
@@ -71,10 +119,6 @@ nav h1 {
     text-decoration: none;
     cursor: pointer;
 }
-/* nav h1 a {
-    text-decoration: none;
-    color: #3D1410;
-} */
 
 nav form {
     float: right;
@@ -105,78 +149,66 @@ nav form {
     border-radius: 6px;
     background-color: #3D1410;
     cursor: pointer;
-    /* border: 1px solid #3D1410; */
-    /* background-color: #3D1410; */
-    /* color: bisque; */
-}
-
-main {
-    padding-top: 40px;
-}
-
-.search-box {
-    width: 80%;
-    height: auto;
-    padding: 4px;
-    font-size: 16px;
-    vertical-align: top;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    margin-right: 5px;
-}
-
-header {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-}
-
-.search-form {
-    margin-top: 10px;
-    background-color: #C8DAFF;
-    background-color: bisque;
-    border-radius: 6px;
-    text-align: center;
-    padding: 20px 0;
-    color: #000036;
-    color: #3d1410;
-    opacity: 0.9;
-    box-shadow: 1px 1px 10px black;
-
-}
-
-.search-button {
-    background: url('Images/icons8-search-50bisque.png');
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    height: 26px;
-    width: 26px;
-    vertical-align: top;
-    /* font-size: 18px;
-    padding: 10px 10px; */
-    border-radius: 6px;
-    background-color: #3D1410;
-    color: bisque;
-    cursor: pointer;
-}
-
-.search-note {
-    font-size: 13px;
-    display: block;
-    padding: 0 6px;
 }
 
 .error-message {
     background-color: bisque;
     color: rgb(168, 4, 4);
     text-align: center;
-    font-size: 20px;
-    margin-top: 50px;
-    padding: 20px;
+    font-size: 18px;
+    margin-top: 60px;
+    padding: 15px;
     border-radius: 6px;
+}
+
+main {
+    padding-top: 50px;
+}
+
+.search-results-total {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+article {
+    margin-bottom: 10px;
+}
+
+h3.result-title {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 0 7px;
+    padding: 4px 0 10px;
+    display: block;
+}
+
+h3 a {
+    text-decoration: none;
+}
+
+article img {
+    margin: 0 4px 4px 7px;
+    width: 20%;
+    max-width: 110px;
+    box-shadow: 1px 1px 10px grey;
+    display: inline-block;
+}
+
+.result-info {
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: top;
+    width: 73%;
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 14px;
+}
+
+article p {
+    font-size: 14px;
+    margin: 0 7px;
+    padding: 0 0 5px;
 }
 
 h2, article, .result-card {
@@ -185,7 +217,7 @@ h2, article, .result-card {
     color: #3d1410;
     opacity: 0.9;
     border-radius: 6px;
-    margin-top: 20px;
+    /* margin-top: 20px; */
     box-shadow: 1px 1px 10px black;
 }
 
@@ -240,37 +272,10 @@ h2, article, .result-card {
     overflow: hidden;
 }
 
-.search-results-total {
-    font-family: 'Lato', 'Helvetica', sans-serif;
-    font-size: 16px;
-}
-
-h3.result-title {
-    font-family: 'Lato', 'Helvetica', sans-serif;
-    font-weight: 400;
-    margin: 0 6px;
-    padding: 4px 0;
-    display: block;
-}
 
 
 
-article img {
-    margin-left: 6px;
-    width: 20%;
-    max-width: 110px;
-    box-shadow: 1px 1px 10px grey;
-    display: inline-block;
-}
 
-.result-info {
-    display: inline-block;
-    margin-right: 3px;
-    vertical-align: top;
-    width: 75%;
-    font-family: 'Lato', 'Helvetica', sans-serif;
-    font-size: 14px;
-}
 
 
 @media only screen and (min-width: 430px) {
@@ -278,11 +283,31 @@ article img {
         margin: 140px auto 40px auto;
         font-size: 56px;
     }
+    h2 {
+        display: inline-block;
+        font-size: 26px;
+    }
+    .search-box {
+        padding: 10px;
+        font-size: 18px;
+        margin-right: 10px;
+    }
+    .search-button {
+        height: 40px;
+        width: 40px;
+    }
+    .search-note {
+        font-size: 15px;
+    }
     nav h1 {
         font-size: 36px;
         padding: 8px 12px 3px 10px;
         margin-left: 5px;
 
+    }
+    nav form {
+        float: left;
+        width: 50%;
     }
     .search-box-nav {
         position: relative;
@@ -301,27 +326,10 @@ article img {
         height: 26px;
         width: 26px;
     }
-    nav form {
-        float: left;
-        width: 50%;
+    .error-message {
+        margin-top: 100px;
     }
     main {
         padding-top: 70px;
-    }
-    .search-box {
-        padding: 10px;
-        font-size: 18px;
-        margin-right: 10px;
-    }
-    .search-button {
-        height: 40px;
-        width: 40px;
-    }
-    h2 {
-        display: inline-block;
-        font-size: 26px;
-    }
-    .search-note {
-        font-size: 15px;
     }
 }
