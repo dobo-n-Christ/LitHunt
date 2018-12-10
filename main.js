@@ -5,6 +5,11 @@ const wikiUrl = 'https://en.wikipedia.org/w/api.php';
 const youTubeUrl = 'https://www.googleapis.com/youtube/v3/search';
 const tasteDiveUrl = 'https://tastedive.com/api/similar';
 let bookResultsArray = [];
+let resultsPageNumber = 1;
+const googleBooksParams = {
+    q: '',
+    startIndex: 0
+}
 
 function formatQueryParams(params) {
     const queryParamItems = Object.keys(params).map(key => 
@@ -151,7 +156,9 @@ function generateResultElement(response, i) {
 function displayResults(responseJson) {
     hideGrandparent('#js-error-message');
     $('#js-search-results-list').empty();
-    displayResultsTotal(responseJson);
+    if (googleBooksParams.startIndex === 0) {
+        displayResultsTotal(responseJson);
+    }
     for (let i = 0; i < responseJson.items.length; i++) {
         const resultElement = generateResultElement(responseJson, i);
 		$('#js-search-results-list').append(resultElement);
@@ -366,7 +373,6 @@ function generateRecElement(rec) {
     </li>
     `;
 }
-// ${rec.wUrl}
 
 function generateTasteDiveLink(title) {
     const bookSearchTerm = encodeURIComponent(title).replace(/%20/g, '+').replace(/'/g, '%27');
@@ -413,7 +419,7 @@ function getTasteDiveData(book) {
 function returnToSearchResults() {
     $('html, body').scrollTop($('main').offset().top);
     // window.scrollTo(0, 0);
-    unhideGrandparent('#js-search-results-total');
+    unhideGreatGrandparent('#js-search-results-list');
     hideCards();
     emptyCards();
 }
@@ -444,6 +450,7 @@ function watchResultClick() {
 }
 
 function handleError(err) {
+    resultsPageNumber = -2;
     hideGrandparent('#js-search-results-total');
     hideGrandparent('#js-top-button');
     $('#js-search-results-total').empty();
@@ -452,11 +459,8 @@ function handleError(err) {
     unhideGrandparent('#js-error-message');
 }
 
-function getResultsData(query) {
-    const params = {
-        q: query
-    }
-    const queryString = formatQueryParams(params);
+function getResultsData() {
+    const queryString = formatQueryParams(googleBooksParams);
     const url = `${googleBooksUrl}?${queryString}`;
     fetch(url)
     .then(response => response.json())
@@ -510,28 +514,50 @@ function hideCards() {
 }
 
 function emptyCards() {
-    $('#js-youtube-card, #js-amazon-card, #js-tastedive-card-intro, #js-tastedive-card-list, #js-tastedive-card-link').empty();
+    $('#js-book-detail-card, #js-wiki-card, #js-youtube-card, #js-amazon-card, #js-tastedive-card-intro, #js-tastedive-card-list, #js-tastedive-card-link').empty();
 }
 
 function watchNavForm() {
     $('#js-search-form-nav').submit(event => {
         event.preventDefault();
+        resultsPageNumber = 1;
+        googleBooksParams.startIndex = 0;
         const searchTerm = $('#js-search-term-nav').val();
-        getResultsData(searchTerm);
+        googleBooksParams.q = searchTerm;
+        getResultsData();
         hideCards();
         emptyCards();
+    })
+}
+
+function displayPageNumber() {
+    $('#js-search-results-total').html(`Page ${resultsPageNumber} of your LitHunt Results:`);
+}
+
+function watchNextClick() {
+    $('#js-next-button').click(event => {
+        event.preventDefault();
+        resultsPageNumber = ++resultsPageNumber;
+        const newStartIndex = googleBooksParams.startIndex + 10;
+        googleBooksParams.startIndex = newStartIndex;
+        displayPageNumber();
+        getResultsData();
     })
 }
 
 function watchForm() {
     $('#js-search-form').submit(event => {
         event.preventDefault();
+        resultsPageNumber = 1;
+        googleBooksParams.startIndex = 0;
         const searchTerm = $('#js-search-term').val();
         $('#js-search-term-nav').val(searchTerm);
-        getResultsData(searchTerm);
+        googleBooksParams.q = searchTerm;
+        getResultsData();
         hideCards();
         emptyCards();
         watchNavForm();
+        watchNextClick();
     })
 }
 
