@@ -420,6 +420,10 @@ function returnToSearchResults() {
     $('html, body').scrollTop($('main').offset().top);
     // window.scrollTo(0, 0);
     unhideGreatGrandparent('#js-search-results-list');
+    unhideGrandparent('#js-next-button');
+    if (resultsPageNumber > 1) {
+        $('#js-previous-button').prop('hidden', false);
+    }
     hideCards();
     emptyCards();
 }
@@ -436,7 +440,7 @@ function watchResultClick() {
         $('html, body').scrollTop($('main').offset().top);
         // $('body').animate({ scrollTop: 410}, 800);
         event.preventDefault();
- 
+        hideGrandparent('#js-next-button');
         $('#js-back-button').prop('hidden', false);
         // window.scrollTo(0, 410);
         const bookTitle = event.target.innerText.trim();
@@ -450,9 +454,9 @@ function watchResultClick() {
 }
 
 function handleError(err) {
-    resultsPageNumber = -2;
     hideGrandparent('#js-search-results-total');
-    hideGrandparent('#js-top-button');
+    hideParent('#js-top-button');
+    hideGrandparent('#js-next-button');
     $('#js-search-results-total').empty();
     $('#js-search-results-list').empty();
     $('#js-error-message').text(`Something went wrong: ${err.message}`);
@@ -465,6 +469,7 @@ function getResultsData() {
     fetch(url)
     .then(response => response.json())
     .then(responseJson => {
+        $('html, body').scrollTop($('main').offset().top);
         $('nav').prop('hidden', false);
         hideGrandparent('header');
         hideGrandparent('#js-search-form');
@@ -475,7 +480,8 @@ function getResultsData() {
         bookResultsArray = responseJson.items;
         displayResults(responseJson);
         watchResultClick();
-        unhideGrandparent('#js-top-button');
+        unhideParent('#js-top-button');
+        unhideGrandparent('#js-next-button');
     })
     .catch(handleError);
 }
@@ -522,6 +528,7 @@ function watchNavForm() {
         event.preventDefault();
         resultsPageNumber = 1;
         googleBooksParams.startIndex = 0;
+        $('#js-previous-button').prop('hidden', true);
         const searchTerm = $('#js-search-term-nav').val();
         googleBooksParams.q = searchTerm;
         getResultsData();
@@ -530,14 +537,32 @@ function watchNavForm() {
     })
 }
 
+function watchPreviousClick() {
+    $('#js-previous-button').click(event => {
+        event.preventDefault();
+        $('html, body').scrollTop($('main').offset().top);
+        resultsPageNumber = --resultsPageNumber;
+        if (resultsPageNumber < 2) {
+            $('#js-previous-button').prop('hidden', true);
+        }
+        const newStartIndex = googleBooksParams.startIndex - 10;
+        googleBooksParams.startIndex = newStartIndex;
+        displayPageNumber();
+        getResultsData();
+    })
+}
+
 function displayPageNumber() {
-    $('#js-search-results-total').html(`Page ${resultsPageNumber} of your LitHunt Results:`);
+    if (resultsPageNumber > 1) {
+        $('#js-search-results-total').html(`Page ${resultsPageNumber} of your LitHunt Results:`);
+    }
 }
 
 function watchNextClick() {
     $('#js-next-button').click(event => {
         event.preventDefault();
-        event.stopImmediatePropagation();
+        $('html, body').scrollTop($('main').offset().top);
+        $('#js-previous-button').prop('hidden', false);
         resultsPageNumber = ++resultsPageNumber;
         const newStartIndex = googleBooksParams.startIndex + 10;
         googleBooksParams.startIndex = newStartIndex;
@@ -557,8 +582,6 @@ function watchForm() {
         getResultsData();
         hideCards();
         emptyCards();
-        watchNavForm();
-        watchNextClick();
     })
 }
 
@@ -570,8 +593,12 @@ function watchLogo() {
 }
 
 function handleApp() {
+    watchNavForm();
     watchForm();
+    watchPreviousClick();
+    watchNextClick();
     watchLogo();
+
 }
 
 $(handleApp);
