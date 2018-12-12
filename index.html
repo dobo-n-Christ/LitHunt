@@ -31,11 +31,6 @@
             </form>
         </div>
     </div>
-    <div class="row" hidden>
-        <div class="col-12">
-            <p role="alert" id="js-error-message" class="error-message" aria-live="assertive"></p>
-        </div>
-    </div>
     <nav role="navigation" hidden>
         <h1 class="js-website-logo">LitHunt</h1>
         <form role="search" id="js-search-form-nav" class="search-form-nav">
@@ -43,6 +38,11 @@
             <input type="submit" class="search-button-nav" value="">
         </form>
     </nav>
+    <div class="row" hidden>
+        <div class="col-12">
+            <p role="alert" id="js-error-message" class="error-message" aria-live="assertive"></p>
+        </div>
+    </div>
     <main role="main">
         <div class="row" hidden>
             <div class="col-12">
@@ -60,7 +60,7 @@
         </div>
         <div class="row" hidden>
             <div class="col-12">
-                <section role="region" id="js-wiki-card" class="result-card" aria-live="polite"></section>
+                <section role="region" id="js-wiki-card" class="result-card wiki-card" aria-live="polite"></section>
             </div>
         </div>
         <div class="row" hidden>
@@ -69,8 +69,9 @@
             </div>
             <div class="col-6">
                 <section role="region" id="js-amazon-card" class="result-card amazon-card" aria-live="polite"></section>
-                <section role="region" id="js-tastedive-card" class="result-card" aria-live="polite" hidden>
-                    <h4 id="js-tastedive-card-intro"></h4>
+                <section role="region" id="js-tastedive-card" class="result-card tastedive-card" aria-live="polite" hidden>
+                    <h2 id="js-tastedive-card-heading"></h2>
+                    <h3 id="js-tastedive-card-intro"></h3>
                     <ul id="js-tastedive-card-list" class="tastedive-list"></ul>
                     <p id="js-tastedive-card-link"></p>
                 </section>

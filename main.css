@@ -44,12 +44,14 @@ header h1 {
     text-decoration: none; 
 }
 
-h2 {
+header h2 {
+    font-family: 'Libre Baskerville', 'Garamond', serif;
     font-size: 20px;
     font-weight: normal;
     color: #3d1410;
-    font-family: 'Libre Baskerville', 'Garamond', serif;
-    font-family: 'Lato', 'Helvetica', sans-serif;
+    background-color: bisque;
+    opacity: 0.9;
+    border-radius: 6px;
     padding: 5px 6px;
     box-shadow: 1px 1px 10px black;
 }
@@ -168,7 +170,14 @@ main {
 .search-results-total {
     font-family: 'Lato', 'Helvetica', sans-serif;
     font-size: 14px;
+    font-weight: normal;
     margin-bottom: 10px;
+    color: #3d1410;
+    background-color: bisque;
+    opacity: 0.9;
+    border-radius: 6px;
+    padding: 5px 6px;
+    box-shadow: 1px 1px 10px black;
 }
 
 article {
@@ -247,7 +256,6 @@ footer {
     color: #3D1410;
     bottom: 0px;
     left: 0px;
-    z-index: 1;
     font-size: 16px;
     padding-left: 13px;
     padding-bottom: 7px;
@@ -263,30 +271,171 @@ footer p {
 }
 
 .back-button {
-    /* display: block; */
-    width: 110%;
+    width: 100%;
     text-decoration: none;
     background-color: bisque;
     color: #3D1410;
     position: fixed;
     padding: 0;
-    margin-left: -4px;
+    margin-left: 0px;
     top: 40px;
     z-index: 1;
-    font-size: 14px;
+    font-size: 12px;
+    box-shadow: 0 4px 3px -3px black;
 }
 
 .book-detail-card {
-    margin-top: 20px;
+    margin-top: 20px; 
 }
 
-h2, article, .result-card {
+.result-card {
+    margin-bottom: 10px;
+}
+
+.result-card h2 {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    float: right;
+    padding: 5px 7px 10px;
+}
+
+.result-card h3 {
+    clear: right;
+    padding: 0 7px 10px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.result-card h4, .pub-data, .book-detail-card li {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 13px;
+    display: block;
+    margin-left: 10px;
+}
+
+.book-detail-card .detail-thumbnail {
+    clear: left;
+    float: right;
+    width: 35%;
+    margin: 0 10px 0 5px;
+    box-shadow: 1px 1px 10px black;
+}
+
+.book-detail-card::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.result-card h4 {
+    clear: left;
+    font-size: 15px;
+}
+
+.result-card .result-summary {
+    clear: both;
+    font-family: 'Libre Baskerville', 'Garamond', serif;
+    font-size: 13px;
+    line-height: 1.5em;
+    padding-top: 10px;
+    margin: 0 7px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 12;
+    -webkit-box-orient: vertical;
+}
+
+.result-card .open-new-page-symbol {
+    width: 18px;
+    box-shadow: none;
+}
+
+.detail-links {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 16px;
+    clear: both;
+    display: block;
+    padding-top: 5px;
+    margin: 0 7px 5px 7px;
+}
+
+.preview-link, .read-link {
+    position: relative;
+    color: #3D1410;
+    text-decoration: none;
+}
+
+.read-link {
+    float: right;
+}
+
+.book-detail-card .open-new-page-symbol,
+.wiki-card .open-new-page-symbol,
+.youtube-card .open-new-page-symbol,
+.amazon-card .open-new-page-symbol,
+.tastedive-card .open-new-page-symbol {
+    position: relative;
+    vertical-align: bottom;
+}
+
+.wiki-card p {
+    clear: right;
+    margin: 0 10px 10px;
+    font-size: 13px;
+    line-height: 1.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 22;
+    -webkit-box-orient: vertical;
+}
+
+.wiki-card {
+    clear: both;
+}
+
+.wiki-link, .youtube-link, .amazon-link, .tastedive-link {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 16px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    color: #3D1410;
+    bottom: 5px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.amazon-logo {
+    width: 100%;
+    padding: 50px 60px 40px;
+}
+
+.book-title {
+    display: block;
+    margin: 7px 0;
+}
+
+.tastedive-list {
+    margin-bottom: 15px;
+}
+
+.tastedive-list a {
+    font-size: 13px;
+    display: block;
+    color: #3D1410;
+    margin: 0 10px 10px;
+    text-decoration: none;
+}
+
+article, .result-card {
     font-family: 'Libre Baskerville', 'Garamond', serif;
     background-color: bisque;
     color: #3d1410;
     opacity: 0.9;
     border-radius: 6px;
-    /* margin-top: 20px; */
     box-shadow: 1px 1px 10px black;
 }
 
@@ -294,28 +443,11 @@ h2, article, .result-card {
     list-style: none;
 }
 
-.amazon-logo {
-    width: 100%;
-    padding: 60px 60px 20px;
-}
-
-.amazon-card {
-    text-align: center;
-}
-
-.youtube-card .youtube-link {
-    display: block;
-}
-
 .youtube-card img {
-    width: 20%;
+    width: 40%;
+    /* width: 200px; */
 }
 
-.ellipsis {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
 
 
 
@@ -328,7 +460,7 @@ h2, article, .result-card {
         margin: 140px auto 40px auto;
         font-size: 56px;
     }
-    h2 {
+    header h2 {
         display: inline-block;
         font-size: 26px;
     }

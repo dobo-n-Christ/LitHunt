@@ -23,7 +23,7 @@ function displayResultsTotal(responseJson) {
 
 function generateThumbnailElement(thumbnail) {
     return `
-    <img src="${thumbnail}" alt="Image of front cover of book">
+    <img src="${thumbnail}" class="detail-thumbnail" alt="Image of front cover of book">
     `;
 }
 
@@ -159,11 +159,15 @@ function displayResults(responseJson) {
     if (googleBooksParams.startIndex === 0) {
         displayResultsTotal(responseJson);
     }
+    if (!bookResultsArray || bookResultsArray.length !== 10) {
+        $('#js-next-button').prop('hidden', true);
+    }
+    unhideGrandparent('#js-next-button');
     for (let i = 0; i < responseJson.items.length; i++) {
         const resultElement = generateResultElement(responseJson, i);
-		$('#js-search-results-list').append(resultElement);
+        $('#js-search-results-list').append(resultElement);
+        unhideGreatGrandparent('#js-search-results-list');
     }
-    unhideGreatGrandparent('#js-search-results-list');
 }
 
 function handleIsbn(book) {
@@ -215,13 +219,23 @@ function handleDetailSummary(item) {
 
 function generateBookDetail(book) {
     return `
+    <h2>From Google Books</h2>
     <h3>${book.volumeInfo.title}</h3>
     <a href="${book.volumeInfo.infoLink}" target="_blank">${handleThumbnail(book)}</a>
     <h4>${handleAuthor(book)}</h4>
-    <p>${handlePublisher(book)} ${handleDatePublished(book)}</p>
+    <p class="pub-data">${handlePublisher(book)} ${handleDatePublished(book)}</p>
     ${handleIsbn(book)}
     ${handleDetailSummary(book)}
-    <a href="${book.volumeInfo.previewLink}" target="_blank">Preview this book</a>
+    <div class="detail-links">
+        <a href="${book.volumeInfo.previewLink}" class="preview-link" target="_blank">
+            Preview This Book
+            <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
+        </a>
+        <a href="${book.volumeInfo.infoLink}" class="read-link" target="_blank">
+            Read More
+            <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
+        </a>
+    </div>
     `;
 }
 
@@ -241,8 +255,12 @@ function displayBookDetail(bookId) {
 
 function generateWikiExtract(bookExtract, pageId) {
     return `
-    <p>${bookExtract.query.pages[pageId].extract}</p>
-    <a href="https://en.wikipedia.org/?curid=${pageId}" target="_blank">Full Wikipedia page</a>
+    <h2>From Wikipedia</h2>
+    <p class="ellipsis">${bookExtract.query.pages[pageId].extract}</p>
+    <a href="https://en.wikipedia.org/?curid=${pageId}" class="wiki-link" target="_blank">
+        Read More
+        <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
+    </a>
     `;
 }
 
@@ -288,6 +306,17 @@ function getPageId(book) {
     })
 }
 
+function generateYouTubeHeading() {
+    return `
+    <h2>From YouTube</h2>
+    `;
+}
+
+function displayYouTubeHeading() {
+    const youTubeHeading = generateYouTubeHeading();
+    $('#js-youtube-card').html(youTubeHeading);
+}
+
 function generateVideoElement(video) {
     return `
     <h3>${video.snippet.title}</h3>
@@ -298,7 +327,10 @@ function generateVideoElement(video) {
 function generateYouTubeLink(bookTitle) {
     const bookSearchTerm = encodeURIComponent(bookTitle).replace(/%20/g, '+').replace(/'/g, '%27');
     return `
-    <a href="https://www.youtube.com/results?search_query=${bookSearchTerm}" class="youtube-link" target="_blank">More YouTube results</a>
+    <a href="https://www.youtube.com/results?search_query=${bookSearchTerm}" class="youtube-link" target="_blank">
+        See More
+        <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
+    </a>
     `;
 }
 
@@ -311,6 +343,7 @@ function displayYouTubeLink(bookTitle) {
 function displayYouTubeResults(videoResults, bookTerm) {
     const videoResultsArray = videoResults.items;
     if (videoResultsArray.length > 0) {
+        displayYouTubeHeading();
         for (let i = 0; i < videoResultsArray.length; i++) {
             const video = videoResultsArray[i];
             const videoElement = generateVideoElement(video);
@@ -347,9 +380,12 @@ function generateAmazonLink(book) {
 function generateAmazonElement(book) {
     const amazonLink = generateAmazonLink(book);
     return `
+    <h2>From Amazon</h2>
     <a href="${amazonLink}" class="amazon-link" target="_blank">
-    <img src="Images/amazon.png" class="amazon-logo" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
-    This and related products at Amazon.com</a>
+        <img src="Images/amazon.png" class="amazon-logo" alt="Amazon.com logo with the word 'amazon' in lowercase black letters and an orange arrow underneath curving from the first letter 'a' to the letter 'z'">
+        See This Book and More
+        <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
+    </a>
     `;
 }
 
@@ -359,25 +395,46 @@ function displayAmazonLink(book) {
     unhideGrandparent('#js-amazon-card');
 }
 
-function generateSearchIntro(book) {
+function generateTasteDiveHeading() {
+    return `From TasteDive`;
+}
+
+function displayTasteDiveHeading() {
+    const tasteDiveHeading = generateTasteDiveHeading();
+    $('#js-tastedive-card-heading').html(tasteDiveHeading);
+}
+
+function generateTasteDiveIntro(book) {
     return `
-    If you enjoy reading ${book.Info[0].Name},<br>
-    TasteDive has the following recommendations for you:
+    <span class="sub-clause">If you are enjoying</span>
+    <span class="book-title">${book.Info[0].Name},</span>
+    <span class="main-clause">we recommend the following:</span>
     `;
+}
+
+function displayTasteDiveIntro(tasteDataset) {
+    const tasteSearchIntro = generateTasteDiveIntro(tasteDataset);
+    $('#js-tastedive-card-intro').html(tasteSearchIntro);
 }
 
 function generateRecElement(rec) {
     return `
-    <li>
-        <a href="${generateAmazonLink(rec.Name)}" target="_blank">${rec.Name} (${rec.Type})</a>
+    <li class="tastedive-list-item">
+        <a href="${generateAmazonLink(rec.Name)}" target="_blank">
+            <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
+            ${rec.Name} (${rec.Type})
+        </a>
     </li>
     `;
 }
 
 function generateTasteDiveLink(title) {
-    const bookSearchTerm = encodeURIComponent(title).replace(/%20/g, '+').replace(/'/g, '%27');
+    const bookSearchTerm = title.trim().replace(/[^a-z0-9]+/gi, "-");
     return `
-    <a href="https://tastedive.com/like/book:${bookSearchTerm}" target="_blank">More TasteDive recommendations</a>
+    <a href="https://tastedive.com/like/${bookSearchTerm}-Book" class="tastedive-link" target="_blank">
+        Get More
+        <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
+    </a>
     `;
 }
 
@@ -386,18 +443,18 @@ function displayTasteDiveLink(bookTitle) {
     $('#js-tastedive-card-link').html(tasteDiveLink);
 }
 
-function displayTasteDiveResults(data, title) {
+function displayTasteDiveResults(data) {
     const tasteDataset = data.Similar;
     const tasteRecs = tasteDataset.Results;
     if (Array.isArray(tasteRecs) && tasteRecs.length) {
-        const tasteSearchIntro = generateSearchIntro(tasteDataset);
-        $('#js-tastedive-card-intro').html(tasteSearchIntro);
+        displayTasteDiveHeading();
+        displayTasteDiveIntro(tasteDataset);
         for (let i = 0; i < tasteRecs.length; i++) {
             const tasteRec = tasteRecs[i];
             const recElement = generateRecElement(tasteRec);
             $('#js-tastedive-card-list').append(recElement);
         }
-        displayTasteDiveLink(title);
+        displayTasteDiveLink(tasteDataset.Info[0].Name);
         unhideParent('#js-tastedive-card-list');
     }
 }
@@ -406,7 +463,7 @@ function getTasteDiveData(book) {
     const params = {
         callback: '?',
         q: `book:${book}`,
-        limit: 10,
+        limit: 7,
         info: 1,
         k: '324145-Literatu-VZEN2AQI'
     }
@@ -418,12 +475,14 @@ function getTasteDiveData(book) {
 
 function returnToSearchResults() {
     $('html, body').scrollTop($('main').offset().top);
-    // window.scrollTo(0, 0);
     unhideGreatGrandparent('#js-search-results-list');
-    unhideGrandparent('#js-next-button');
     if (resultsPageNumber > 1) {
         $('#js-previous-button').prop('hidden', false);
     }
+    if (!bookResultsArray || bookResultsArray.length !== 10) {
+        $('#js-next-button').prop('hidden', true);
+    }
+    unhideGrandparent('#js-next-button');
     hideCards();
     emptyCards();
 }
@@ -438,11 +497,9 @@ function watchBackClick() {
 function watchResultClick() {
     $('a.js-result-title').on('click', event => {
         $('html, body').scrollTop($('main').offset().top);
-        // $('body').animate({ scrollTop: 410}, 800);
         event.preventDefault();
         hideGrandparent('#js-next-button');
         $('#js-back-button').prop('hidden', false);
-        // window.scrollTo(0, 410);
         const bookTitle = event.target.innerText.trim();
         displayBookDetail(event.target.dataset.bookId);
         getPageId(bookTitle);
@@ -473,15 +530,10 @@ function getResultsData() {
         $('nav').prop('hidden', false);
         hideGrandparent('header');
         hideGrandparent('#js-search-form');
-        // $('html, body').animate({
-        //     scrollTop: $('main').offset().top
-        // }, 800);
-        // $('body').animate({ scrollTop: 410 }, 800);
         bookResultsArray = responseJson.items;
         displayResults(responseJson);
         watchResultClick();
         unhideParent('#js-top-button');
-        unhideGrandparent('#js-next-button');
     })
     .catch(handleError);
 }
@@ -541,6 +593,7 @@ function watchPreviousClick() {
     $('#js-previous-button').click(event => {
         event.preventDefault();
         $('html, body').scrollTop($('main').offset().top);
+        $('#js-next-button').prop('hidden', false);
         resultsPageNumber = --resultsPageNumber;
         if (resultsPageNumber < 2) {
             $('#js-previous-button').prop('hidden', true);
@@ -602,3 +655,12 @@ function handleApp() {
 }
 
 $(handleApp);
+
+        // $('body').animate({ scrollTop: 410}, 800);
+
+                // window.scrollTo(0, 410);
+
+                        // $('html, body').animate({
+        //     scrollTop: $('main').offset().top
+        // }, 800);
+        // $('body').animate({ scrollTop: 410 }, 800);
