@@ -129,16 +129,18 @@ function handleItemData(item) {
         const summary = handleSummary(item);
         return `
         <li class="result-element">
-            <article>
-                <h3 class="result-title">
-                    <a href="#" data-book-id="${item.id}" class="js-result-title result-title">${item.volumeInfo.title}</a>
-                </h3>
-                ${thumbnail}
-                <div class="result-info">
-                    ${pubData}
-                </div>
-                ${summary}
-            </article>
+            <a href="#" data-book-id="${item.id}" class="js-result-title result-title">
+                <article data-book-id="${item.id}">
+                    <h3 data-book-id="${item.id} class="result-title">
+                        ${item.volumeInfo.title}
+                    </h3>
+                    ${thumbnail}
+                    <div data-book-id="${item.id} class="result-info">
+                        ${pubData}
+                    </div>
+                    ${summary}
+                </article>
+            </a>
         </li>
         `;
     }
@@ -495,7 +497,8 @@ function watchBackClick() {
 }
 
 function watchResultClick() {
-    $('a.js-result-title').on('click', event => {
+    const articleLink = $('a.js-result-title');
+    articleLink.on('click', event => {
         $('html, body').scrollTop($('main').offset().top);
         event.preventDefault();
         hideGrandparent('#js-next-button');

@@ -430,6 +430,8 @@ footer p {
     text-decoration: none;
 }
 
+
+
 article, .result-card {
     font-family: 'Libre Baskerville', 'Garamond', serif;
     background-color: bisque;
@@ -443,9 +445,14 @@ article, .result-card {
     list-style: none;
 }
 
+.youtube-card h3 {
+    float: right;
+    font-size: 10px;
+}
+
 .youtube-card img {
     width: 40%;
-    /* width: 200px; */
+    /* float: left; */
 }
 
 
