@@ -129,13 +129,13 @@ function handleItemData(item) {
         const summary = handleSummary(item);
         return `
         <li class="result-element">
-            <a href="#" data-book-id="${item.id}" class="js-result-title result-title">
-                <article data-book-id="${item.id}">
-                    <h3 data-book-id="${item.id} class="result-title">
+            <a href="#" data-book-id="${item.id}" data-book-title="${item.volumeInfo.title}" class="js-result-title result-title">
+                <article>
+                    <h3 class="result-title">
                         ${item.volumeInfo.title}
                     </h3>
                     ${thumbnail}
-                    <div data-book-id="${item.id} class="result-info">
+                    <div class="result-info">
                         ${pubData}
                     </div>
                     ${summary}
@@ -158,6 +158,7 @@ function generateResultElement(response, i) {
 function displayResults(responseJson) {
     hideGrandparent('#js-error-message');
     $('#js-search-results-list').empty();
+    $('html, body').scrollTop($('main').offset().top);
     if (googleBooksParams.startIndex === 0) {
         displayResultsTotal(responseJson);
     }
@@ -206,12 +207,12 @@ function handleIsbn(book) {
 function handleDetailSummary(item) {
     if (item.volumeInfo.description) {
         return `
-        <p class="result-summary">${item.volumeInfo.description}</p>
+        <p class="detail-summary">${item.volumeInfo.description}</p>
         `;
     }
     else if (item.searchInfo) {
         return `
-        <p class="result-summary">${item.searchInfo.textSnippet}</p>
+        <p class="detail-summary">${item.searchInfo.textSnippet}</p>
         `;
     }
     else {
@@ -258,7 +259,7 @@ function displayBookDetail(bookId) {
 function generateWikiExtract(bookExtract, pageId) {
     return `
     <h2>From Wikipedia</h2>
-    <p class="ellipsis">${bookExtract.query.pages[pageId].extract}</p>
+    <article>${bookExtract.query.pages[pageId].extract}</article>
     <a href="https://en.wikipedia.org/?curid=${pageId}" class="wiki-link" target="_blank">
         Read More
         <img src="Images/icons8-external-link-30.png" class="open-new-page-symbol" alt="External link symbol consisting of a square with rounded corners and a diagonal arrow pointing from the center of the square through the upper right corner">
@@ -278,7 +279,6 @@ function getWikiData(id) {
         format: 'json',
         prop: 'extracts',
         exintro: '',
-        explaintext: '',
         pageids: id,
         origin: '*'
     }
@@ -294,7 +294,7 @@ function getPageId(book) {
         action: 'query',
         format: 'json',
         list: 'search',
-        srlimit: 1,
+        srlimit: 4,
         srsearch: book,
         origin: '*'
     }
@@ -303,26 +303,34 @@ function getPageId(book) {
     fetch(url)
     .then(response => response.json())
     .then(responseJson => {
-        const pageId = responseJson.query.search[0].pageid;
-        getWikiData(pageId);
+        for (let i = 0; i < params.srlimit; i++) {
+            const pageTitle = responseJson.query.search[i].title;
+            if (!pageTitle.includes('(film)')) {
+                const pageId = responseJson.query.search[i].pageid;
+                getWikiData(pageId);
+                break;
+            }
+        }
     })
 }
 
 function generateYouTubeHeading() {
-    return `
-    <h2>From YouTube</h2>
-    `;
+    return `From YouTube`;
 }
 
 function displayYouTubeHeading() {
     const youTubeHeading = generateYouTubeHeading();
-    $('#js-youtube-card').html(youTubeHeading);
+    $('#js-youtube-card-heading').html(youTubeHeading);
 }
 
 function generateVideoElement(video) {
     return `
-    <h3>${video.snippet.title}</h3>
-    <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank"><img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to this video, which is entitled ${video.snippet.title}"></a>
+    <li>
+    <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank">
+        <img src="${video.snippet.thumbnails.medium.url}" alt="Click this thumbnail to navigate to this video, which is entitled ${video.snippet.title}">
+        <h3 class="youtube-title">${video.snippet.title}</h3>
+    </a>
+    </li>
     `;
 }
 
@@ -338,8 +346,8 @@ function generateYouTubeLink(bookTitle) {
 
 function displayYouTubeLink(bookTitle) {
     const youTubeLink = generateYouTubeLink(bookTitle);
-    $('#js-youtube-card').append(youTubeLink);
-    unhideGrandparent('#js-youtube-card');
+    $('#js-youtube-card-link').html(youTubeLink);
+    unhideParent('#js-youtube-card-link');
 }
 
 function displayYouTubeResults(videoResults, bookTerm) {
@@ -349,7 +357,7 @@ function displayYouTubeResults(videoResults, bookTerm) {
         for (let i = 0; i < videoResultsArray.length; i++) {
             const video = videoResultsArray[i];
             const videoElement = generateVideoElement(video);
-            $('#js-youtube-card').append(videoElement);
+            $('#js-youtube-card-list').append(videoElement);
         }
         displayYouTubeLink(bookTerm);
     }
@@ -359,7 +367,7 @@ function getYouTubeData(book) {
     const params = {
         part: 'snippet',
         q: `${book} read|book|novel|poem`,
-        maxResults: 4,
+        maxResults: 5,
         type: 'video',
         key: 'AIzaSyCspee-SMBxqnWcQJa3h6wgZKMIBkVooz0'
     }
@@ -503,8 +511,16 @@ function watchResultClick() {
         event.preventDefault();
         hideGrandparent('#js-next-button');
         $('#js-back-button').prop('hidden', false);
-        const bookTitle = event.target.innerText.trim();
-        displayBookDetail(event.target.dataset.bookId);
+        let bookTitle;
+        let clickedElement = event.target;
+        let bookId = clickedElement.dataset.bookId;
+        while (!bookId) {
+            clickedElement = clickedElement.parentElement;
+            bookId = clickedElement.dataset.bookId;
+            bookTitle = clickedElement.dataset.bookTitle;
+        }
+        bookTitle = bookTitle.trim();
+        displayBookDetail(bookId);
         getPageId(bookTitle);
         getYouTubeData(bookTitle);
         displayAmazonLink(bookTitle);
@@ -569,13 +585,13 @@ function hideCards() {
     $('#js-back-button').prop('hidden', true);
     hideGrandparent('#js-book-detail-card');
     hideGrandparent('#js-wiki-card');
-    hideGrandparent('#js-youtube-card');
+    hideParent('#js-youtube-card-list');
     hideGrandparent('#js-amazon-card');
     hideParent('#js-tastedive-card-list');
 }
 
 function emptyCards() {
-    $('#js-book-detail-card, #js-wiki-card, #js-youtube-card, #js-amazon-card, #js-tastedive-card-intro, #js-tastedive-card-list, #js-tastedive-card-link').empty();
+    $('#js-book-detail-card, #js-wiki-card, #js-youtube-card-heading, #js-youtube-card-list, #js-youtube-card-link, #js-amazon-card, #js-tastedive-card-intro, #js-tastedive-card-list, #js-tastedive-card-link').empty();
 }
 
 function watchNavForm() {

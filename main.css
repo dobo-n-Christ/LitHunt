@@ -3,7 +3,6 @@
     margin: 0;
     padding: 0;
     border: 0;
-    /* font-size: 0; */
 }
 
 html {
@@ -19,6 +18,11 @@ html {
 body {
     font-family: 'Libre Baskerville', 'Garamond', serif;
     font-family: 'Lato', 'Helvetica', sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #3D1410;
 }
 
 header {
@@ -41,7 +45,6 @@ header h1 {
     padding: 10px;
     cursor: pointer;
     box-shadow: 2px 2px 8px black;
-    text-decoration: none; 
 }
 
 header h2 {
@@ -58,22 +61,21 @@ header h2 {
 
 .search-form {
     margin-top: 10px;
-    background-color: #C8DAFF;
     background-color: bisque;
     border-radius: 6px;
     text-align: center;
     padding: 20px 0;
-    color: #000036;
     color: #3d1410;
     opacity: 0.9;
     box-shadow: 1px 1px 10px black;
 }
 
 .search-box {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 16px;
     width: 80%;
     height: auto;
     padding: 4px;
-    font-size: 16px;
     vertical-align: top;
     border-radius: 6px;
     margin-bottom: 10px;
@@ -118,7 +120,6 @@ nav h1 {
     float: left;
     padding: 5px 10px 1px 8px;
     margin-left: 2px;
-    text-decoration: none;
     cursor: pointer;
 }
 
@@ -127,10 +128,11 @@ nav form {
 }
 
 .search-box-nav {
+    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: 13px;
     position: absolute;
     top: 8px;
     right: 38px;
-    font-size: 13px;
     border-radius: 6px;
     padding: 4px;
     width: 50%;
@@ -167,6 +169,19 @@ main {
     padding-top: 50px;
 }
 
+.result-element:hover {
+    background-color: #8B4513;
+    opacity: 0.9;
+}
+
+.next-button:hover, .previous-button:hover, .back-button:hover {
+    background-color: #eebf95;
+}
+
+.search-button:hover, .search-button-nav:hover {
+    background-color: #52361b;
+}
+
 .search-results-total {
     font-family: 'Lato', 'Helvetica', sans-serif;
     font-size: 14px;
@@ -180,7 +195,7 @@ main {
     box-shadow: 1px 1px 10px black;
 }
 
-article {
+.search-results-list article {
     margin-bottom: 10px;
 }
 
@@ -193,11 +208,7 @@ h3.result-title {
     display: block;
 }
 
-h3 a {
-    text-decoration: none;
-}
-
-article img {
+.search-results-list article img {
     margin: 0 4px 4px 7px;
     width: 20%;
     max-width: 110px;
@@ -214,7 +225,7 @@ article img {
     font-size: 14px;
 }
 
-article p {
+.search-results-list article p {
     font-size: 14px;
     margin: 0 7px;
     padding: 0 0 5px;
@@ -229,8 +240,6 @@ article p {
 }
 
 .previous-button, .next-button {
-    text-decoration: none;
-    color: #3D1410;
     background-color: bisque;
     padding: 5px;
     margin-bottom: 10px;
@@ -249,14 +258,8 @@ footer {
 }
 
 .top-button {
-    bottom: 0;
-    display: inline-block;
-    text-decoration: none;
-    background-color: bisque;
-    color: #3D1410;
-    bottom: 0px;
-    left: 0px;
     font-size: 16px;
+    display: inline-block;
     padding-left: 13px;
     padding-bottom: 7px;
 }
@@ -271,16 +274,14 @@ footer p {
 }
 
 .back-button {
-    width: 100%;
-    text-decoration: none;
-    background-color: bisque;
-    color: #3D1410;
+    font-size: 12px;
     position: fixed;
-    padding: 0;
+    width: 100%;
     margin-left: 0px;
+    padding: 0;
     top: 40px;
     z-index: 1;
-    font-size: 12px;
+    background-color: bisque;
     box-shadow: 0 4px 3px -3px black;
 }
 
@@ -318,7 +319,8 @@ footer p {
     clear: left;
     float: right;
     width: 35%;
-    margin: 0 10px 0 5px;
+    max-width: 128px;
+    margin: 0 10px 10px 5px;
     box-shadow: 1px 1px 10px black;
 }
 
@@ -333,19 +335,26 @@ footer p {
     font-size: 15px;
 }
 
-.result-card .result-summary {
+.detail-summary {
     clear: both;
     font-family: 'Libre Baskerville', 'Garamond', serif;
     font-size: 13px;
+    position: relative;
+    max-height: 17.6em;
     line-height: 1.5em;
-    padding-top: 10px;
     margin: 0 7px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 12;
-    -webkit-box-orient: vertical;
 }
+
+.detail-summary:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 1.6em;
+    background: linear-gradient(to bottom, rgba(255, 228, 196, 0), rgba(255, 228, 196, 1) 90%);
+  }
 
 .result-card .open-new-page-symbol {
     width: 18px;
@@ -363,8 +372,6 @@ footer p {
 
 .preview-link, .read-link {
     position: relative;
-    color: #3D1410;
-    text-decoration: none;
 }
 
 .read-link {
@@ -380,20 +387,40 @@ footer p {
     vertical-align: bottom;
 }
 
-.wiki-card p {
-    clear: right;
-    margin: 0 10px 10px;
-    font-size: 13px;
-    line-height: 1.6em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 22;
-    -webkit-box-orient: vertical;
+.wiki-card .mw-empty-elt {
+    display: none;
 }
 
-.wiki-card {
-    clear: both;
+.wiki-card article {
+    font-size: 13px;
+    clear: right;
+    margin: 0 10px 0px;
+    position: relative;
+    line-height: 1.6em;
+    overflow: hidden;
+    max-height: 35.3em;
+}
+
+i {
+    font-style: italic;
+}
+
+b {
+    font-weight: bold;
+}
+
+.wiki-card article:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 1.7em;
+    background: linear-gradient(to bottom, rgba(255, 228, 196, 0), rgba(255, 228, 196, 1) 90%);
+}
+
+.wiki-link {
+    padding-top: 10px;
 }
 
 .wiki-link, .youtube-link, .amazon-link, .tastedive-link {
@@ -402,18 +429,44 @@ footer p {
     position: relative;
     display: inline-block;
     width: 100%;
-    color: #3D1410;
     bottom: 5px;
     text-align: center;
-    text-decoration: none;
+}
+
+.youtube-list {
+    clear: both;
+    margin: 0 10px 10px;
+}
+
+.youtube-list li {
+    clear: both;
+}
+
+.youtube-card li img {
+    margin: 0 10px 10px 0;
+    width: 40%;
+    float: left;
+}
+
+.youtube-card li h3 {
+    padding: 0;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
 }
 
 .amazon-logo {
     width: 100%;
-    padding: 50px 60px 40px;
+    padding: 50px 60px 38px;
 }
 
 .book-title {
+    font-style: italic;
     display: block;
     margin: 7px 0;
 }
@@ -425,14 +478,12 @@ footer p {
 .tastedive-list a {
     font-size: 13px;
     display: block;
-    color: #3D1410;
     margin: 0 10px 10px;
-    text-decoration: none;
 }
 
 
 
-article, .result-card {
+.search-results-list article, .result-card {
     font-family: 'Libre Baskerville', 'Garamond', serif;
     background-color: bisque;
     color: #3d1410;
@@ -441,18 +492,8 @@ article, .result-card {
     box-shadow: 1px 1px 10px black;
 }
 
-.search-results-list, .isbn, .tastedive-list {
+.search-results-list, .isbn, .youtube-list, .tastedive-list {
     list-style: none;
-}
-
-.youtube-card h3 {
-    float: right;
-    font-size: 10px;
-}
-
-.youtube-card img {
-    width: 40%;
-    /* float: left; */
 }
 
 
@@ -514,6 +555,68 @@ article, .result-card {
         margin-top: 100px;
     }
     main {
-        padding-top: 70px;
+        padding-top: 80px;
+    }
+    .search-results-total {
+        font-size: 16px;
+        display: inline-block;
+    }
+    h3.result-title {
+        font-size: 18px;
+    }
+    .publication-data {
+        font-size: 15px;
+    }
+    .back-button {
+        top: 63px;
+        font-size: 16px;
+    }
+    .result-card h2 {
+        font-size: 17px;
+        padding: 10px;
+    }
+    .result-card h3 {
+        font-size: 18px;
+    }
+    .result-card h4 {
+        font-size: 16px;
+        margin-left: 20px;
+    }
+    .pub-data, .book-detail-card li {
+        font-size: 14px;
+        margin-left: 20px;
+    }
+    .book-detail-card .detail-thumbnail {
+        margin: 0 20px 10px;
+    }
+    .detail-summary {
+        font-size: 14px;
+        max-height: 7.5em;
+        margin: 0 20px;
+    }
+    .detail-links {
+        font-size: 17px;
+        margin: 0 10px 10px;
+    }
+    .wiki-card article {
+        font-size: 14px;
+        margin: 0 20px;
+        max-height: 19em;
+    }
+    .wiki-link, .youtube-link, .amazon-link, .tastedive-link {
+        font-size: 17px;
+    }
+    .youtube-list {
+        margin: 0 20px 10px;
+    }
+    .youtube-card li img {
+        margin: 0 15px 20px 0;
+    }
+    .youtube-card li h3 {
+        font-size: 13px;
+    }
+    .tastedive-list a {
+        font-size: 14px;
+        margin: 0 20px 10px;
     }
 }

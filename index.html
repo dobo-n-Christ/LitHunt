@@ -6,9 +6,7 @@
     <title>LitHunt</title>
     <meta name="description" content="An English major's best friend. Search and get a summary of everything you ever wanted to know about a work of literature or author.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Libre+Baskerville:400,400i,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato|Libre+Baskerville:400,400i,700|Satisfy" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Satisfy" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700|Libre+Baskerville:400,400i,700|Satisfy" rel="stylesheet">
     <link rel="stylesheet" href="float-grid.css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="main.css"/>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
@@ -65,7 +63,11 @@
         </div>
         <div class="row" hidden>
             <div class="col-6">
-                <section role="region" id="js-youtube-card" class="result-card youtube-card" aria-live="polite"></section>
+                <section role="region" id="js-youtube-card" class="result-card youtube-card" aria-live="polite">
+                    <h2 id="js-youtube-card-heading"></h2>
+                    <ul id="js-youtube-card-list" class="youtube-list"></ul>
+                    <p id="js-youtube-card-link"></p>
+                </section>
             </div>
             <div class="col-6">
                 <section role="region" id="js-amazon-card" class="result-card amazon-card" aria-live="polite"></section>
