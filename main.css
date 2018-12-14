@@ -558,9 +558,12 @@ b {
     .publication-data {
         font-size: 15px;
     }
+    .previous-button, .next-button {
+        font-size: 14px;
+    }
     .back-button {
         top: 63px;
-        font-size: 16px;
+        font-size: 14px;
     }
     .result-card h2 {
         font-size: 17px;
