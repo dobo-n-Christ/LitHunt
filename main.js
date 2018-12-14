@@ -539,6 +539,23 @@ function handleError(err) {
     unhideGrandparent('#js-error-message');
 }
 
+function testForSpecificErrors(errorObject, totalItems, responseJson) {
+    if (totalItems === 0) {
+        throw new Error('Your search input is invalid. Please try another search.');
+    }
+    else if (errorObject && errorObject.message === "Missing query.") {
+        throw new Error('Missing query. Please input a valid search term.');
+    }
+    else if (errorObject) {
+        throw new Error(`${errorObject.message}`);
+    }
+    else {
+        displayResults(responseJson);
+        watchResultClick();
+        unhideParent('#js-top-button');
+    }
+}
+
 function getResultsData() {
     const queryString = formatQueryParams(googleBooksParams);
     const url = `${googleBooksUrl}?${queryString}`;
@@ -550,9 +567,10 @@ function getResultsData() {
         hideGrandparent('header');
         hideGrandparent('#js-search-form');
         bookResultsArray = responseJson.items;
-        displayResults(responseJson);
-        watchResultClick();
-        unhideParent('#js-top-button');
+        const errorObject = responseJson.error;
+        const totalItems = responseJson.totalItems;
+        testForSpecificErrors(errorObject, totalItems, responseJson);
+        
     })
     .catch(handleError);
 }
