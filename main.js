@@ -670,16 +670,6 @@ function handleApp() {
     watchPreviousClick();
     watchNextClick();
     watchLogo();
-
 }
 
 $(handleApp);
-
-        // $('body').animate({ scrollTop: 410}, 800);
-
-                // window.scrollTo(0, 410);
-
-                        // $('html, body').animate({
-        //     scrollTop: $('main').offset().top
-        // }, 800);
-        // $('body').animate({ scrollTop: 410 }, 800);
