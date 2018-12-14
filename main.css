@@ -1,5 +1,4 @@
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
     border: 0;
@@ -13,7 +12,6 @@ html {
     -o-background-size: cover;
     background-size: cover;
     height: 100%;
-    overflow: hidden;
     scroll-behavior: smooth;
 }
 
@@ -356,7 +354,7 @@ footer p {
     width: 100%;
     height: 1.6em;
     background: linear-gradient(to bottom, rgba(255, 228, 196, 0), rgba(255, 228, 196, 1) 90%);
-  }
+}
 
 .result-card .open-new-page-symbol {
     width: 18px;
@@ -483,8 +481,6 @@ b {
     margin: 0 10px 10px;
 }
 
-
-
 .search-results-list article, .result-card {
     font-family: 'Libre Baskerville', 'Garamond', serif;
     background-color: bisque;
@@ -497,13 +493,6 @@ b {
 .search-results-list, .isbn, .youtube-list, .tastedive-list {
     list-style: none;
 }
-
-
-
-
-
-
-
 
 @media only screen and (min-width: 430px) {
     header h1 {
@@ -530,7 +519,6 @@ b {
         font-size: 36px;
         padding: 8px 12px 3px 10px;
         margin-left: 5px;
-
     }
     nav form {
         float: left;
