@@ -1,8 +1,8 @@
-#LitHunt
+# LitHunt
 
 [Live Link to LitHunt](https://dobo-n-christ.github.io/LitHunt/)
 
-##Summary
+## Summary
 
 LitHunt allows the user to search for a book, author, or other work of literature. It returns search results using the Google Books API. 
 
@@ -18,7 +18,7 @@ When a user clicks on a search result, the following occur (see third page photo
 4. An Amazon link to the product is provided
 5. A call to the TasteDive API is made and information is displayed (if available)
 
-##Photos of Website:
+## Photos of Website:
 First Page
 ![Home Page Screenshot](Images/Screenshot1.png)
 
@@ -32,13 +32,17 @@ Third Page
 
 ![Bottom of Result Card Page Screenshot](Images/Screenshot5.png)
 
-##Technology:
+## Technology:
 
 * HTML
 * CSS
 * JavaScript
 * jQuery
+* JavaScript Fetch API
+* JSON
+* JSONP
 
-##Thoughts on Future Improvements:
+## Thoughts on Future Improvements:
 
 * More transition/animation effects
+* Possible integration of GoodReads API (had problems with it before)
