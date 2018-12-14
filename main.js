@@ -666,9 +666,9 @@ function watchLogo() {
 
 function handleApp() {
     watchNavForm();
-    watchForm();
     watchPreviousClick();
     watchNextClick();
+    watchForm();
     watchLogo();
 }
 

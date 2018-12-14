@@ -18,7 +18,7 @@ html {
 body {
     font-family: 'Libre Baskerville', 'Garamond', serif;
     font-family: 'Lato', 'Helvetica', sans-serif;
-    color: bisque;
+    background-color: bisque;
 }
 
 a {
@@ -51,7 +51,7 @@ header h1 {
 header h2 {
     font-family: 'Libre Baskerville', 'Garamond', serif;
     font-size: 20px;
-    font-weight: normal;
+    font-weight: 400;
     color: #3d1410;
     background-color: bisque;
     opacity: 0.9;
@@ -186,7 +186,7 @@ main {
 .search-results-total {
     font-family: 'Lato', 'Helvetica', sans-serif;
     font-size: 14px;
-    font-weight: normal;
+    font-weight: 400;
     margin-bottom: 10px;
     color: #3d1410;
     background-color: bisque;
@@ -297,7 +297,7 @@ footer p {
 .result-card h2 {
     font-family: 'Lato', 'Helvetica', sans-serif;
     font-size: 16px;
-    font-weight: normal;
+    font-weight: 400;
     float: right;
     padding: 5px 7px 10px;
 }
@@ -334,6 +334,7 @@ footer p {
 .result-card h4 {
     clear: left;
     font-size: 15px;
+    font-weight: 700;
 }
 
 .detail-summary {
@@ -407,7 +408,7 @@ i {
 }
 
 b {
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .wiki-card article:after {
@@ -453,7 +454,7 @@ b {
     padding: 0;
     text-align: left;
     font-size: 12px;
-    font-weight: normal;
+    font-weight: 400;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;

@@ -29,7 +29,7 @@
             </form>
         </div>
     </div>
-    <nav role="navigation" hidden>
+    <nav role="navigation" aria-live="polite" hidden>
         <h1 class="js-website-logo">LitHunt</h1>
         <form role="search" id="js-search-form-nav" class="search-form-nav">
             <input type="text" name="search-term-nav" id="js-search-term-nav" class="search-box-nav" autocomplete="off" required>
@@ -50,7 +50,7 @@
                 </section>
             </div>
         </div>
-        <a href="#" id="js-back-button" class="back-button" aria-live="assertive" hidden>&#12298 Back to Search Results</a>
+        <a href="#" id="js-back-button" class="back-button" aria-live="polite" hidden>&#12298 Back to Search Results</a>
         <div class="row" hidden>
             <div class="col-12">
                 <section role="region" id="js-book-detail-card" class="result-card book-detail-card" aria-live="assertive"></section> 
@@ -81,12 +81,12 @@
         </div>
         <div class="row" hidden>
             <div class="col-12">
-                <a href="#" id="js-previous-button" class="previous-button" hidden>Previous Page</a>
-                <a href="#" id="js-next-button" class="next-button">Next Page</a>
+                <a href="#" id="js-previous-button" class="previous-button" aria-live="polite" hidden>Previous Page</a>
+                <a href="#" id="js-next-button" class="next-button" aria-live="polite">Next Page</a>
             </div> 
         </div>
     </main>
-    <footer role="contentinfo" hidden>
+    <footer role="contentinfo" aria-live="polite" hidden>
         <a href="#" id="js-top-button" class="top-button">&#65085</a>
         <p>&#169 2018 Sarah Folk</p>
     </footer>
